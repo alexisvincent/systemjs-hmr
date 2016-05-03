@@ -53,7 +53,7 @@ export function __unload() {
 }
 ```
 
-### CSS Plugin Unload Proposal
+### CSS Plugin Unload Hook Proposal
 
 The css ```unload``` hook would simply remove the *link* node from the DOM.
 
@@ -77,7 +77,7 @@ if (isReload) {
 to account for this, and the fact that future plugins might want to be able to handle their own reload behaviour. We call an
 optionally exported plugin reload hook.
 
-### JS Plugin Reload Proposal #1
+### Javascript Plugin Reload Hook Proposal #1
 I can see three ways of implementing the reload hook for JS.
 The first would be the way [capaj/systemjs-hot-reloader](https://github.com/capaj/systemjs-hot-reloader) currently does it,
 which is to export a ```__reload(module)``` function from each module.
@@ -95,7 +95,7 @@ be transparent as far as the dependants are concerned.
 - Not clear when ```__reload``` is actually run (I've seen people duplicate module init behaviour in ```__reload``` function, so init code gets run twice).
 - Different to webpack
 
-### JS Plugin Reload Proposal #2
+### Javascript Plugin Reload Hook Proposal #2
 Identical to proposal #1, however standard module init code is not run, only ```__reload``` function, essentially acting as an
 alternate module constructor.
 
@@ -108,7 +108,7 @@ alternate module constructor.
 - Harder to implement more complex reload behaviour (need to abstract init code into functions that can be rerun from ```__reload```)
 - Actually don't think this is even possible in SystemJS currently.
 
-### JS Plugin Reload Proposal #3
+### Javascript Plugin Reload Hook Proposal #3
 \#1 and #2 work well until you want to incorporate more complex reload logic into your standard module initialisation code.
 
 This approach would be to pass in the old module version instance as a 'local/global' variable directly available to the module.

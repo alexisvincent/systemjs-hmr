@@ -1,6 +1,6 @@
 {
   "name": "systemjs-hmr",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Hot Module Replacement Extention for SystemJS",
   "main": "lib/index.js",
   "scripts": {
@@ -16,6 +16,5 @@
     "url": "https://github.com/alexisvincent/systemjs-hmr/issues"
   },
   "homepage": "https://github.com/alexisvincent/systemjs-hmr#readme",
-  "dependencies": {
-  }
+  "dependencies": {}
 }

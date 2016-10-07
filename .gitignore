@@ -1,3 +1,8 @@
+node_modules
+jspm_packages
+.idea
+systemjs-hmr.iml
+
 ### OSX template
 .DS_Store
 .AppleDouble

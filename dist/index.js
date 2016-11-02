@@ -28,9 +28,11 @@ var getModuleRecord = function getModuleRecord(moduleName) {
                 }
                 var fullModulePath = location.origin + '/' + moduleName;
                 var loadsKey = Object.keys(System.loads).find(function (n) {
-                    return n.indexOf(fullModulePath) !== -1;
+                    return n.indexOf(fullModulePath) !== -1 || System.loads[n].address.indexOf(fullModulePath) !== -1;
                 });
                 // normalize does not yield a key which would match the key used in System.loads, so we have to improvise a bit
+                // also, the module name may not match the address for plugins making use of the SystemJS locate hook,
+                //   so check the address also
                 if (loadsKey) {
                     return {
                         v: System.loads[loadsKey]

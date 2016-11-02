@@ -28,9 +28,11 @@ var getModuleRecord = function getModuleRecord(moduleName) {
                 }
                 var fullModulePath = location.origin + '/' + moduleName;
                 var loadsKey = Object.keys(System.loads).find(function (n) {
-                    return n.indexOf(fullModulePath) !== -1;
+                    return n.indexOf(fullModulePath) !== -1 || System.loads[n].address.indexOf(fullModulePath) !== -1;
                 });
                 // normalize does not yield a key which would match the key used in System.loads, so we have to improvise a bit
+                // also, the module name may not match the address for plugins making use of the SystemJS locate hook,
+                //   so check the address also
                 if (loadsKey) {
                     return {
                         v: System.loads[loadsKey]
@@ -129,6 +131,10 @@ var deleteModule = function deleteModule(moduleToDelete, from) {
 
 var reload = function reload(moduleName) {
     var start = new Date().getTime();
+
+    //importers is currently unreliable, because it doesn't automatically catch modules that load after systemjs-hmr
+    //so we have to fix up the importers every time we need to use it
+    pushImporters(System.loads, true);
 
     modulesJustDeleted = {}; // TODO use weakmap
     return getModuleRecord(moduleName).then(function (module) {

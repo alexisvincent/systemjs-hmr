@@ -69,7 +69,7 @@ When a new version of a module is imported it will probably want to reinitialize
 previous version. For example a component containing the client application state might want to perform the following operation.
 
 ```js
-if (isReload) {
+if (reloading) {
     this.state = oldModule.state
 }
 ```
@@ -77,71 +77,7 @@ if (isReload) {
 to account for this, and the fact that future plugins might want to be able to handle their own reload behaviour. We call an
 optionally exported plugin reload hook.
 
-### Javascript Plugin Reload Hook Proposal #1
-I can see three ways of implementing the reload hook for JS.
-The first would be the way [capaj/systemjs-hot-reloader](https://github.com/capaj/systemjs-hot-reloader) currently does it,
-which is to export a ```__reload(module)``` function from each module.
-
-In this case, once the module is reloaded, the exported ```__reload``` function is run and additional init logic can be placed here.
-Since ES6 modules are live, you could override exports, and since ```__reload``` would be run before any of the modules dependants, this would
-be transparent as far as the dependants are concerned.
-
-**Pros**
-- Clear separation between reload behaviour and standard module initialisation
-- Potentially simplest reload hook implementation out of #1, #2 and #3
-
-**Cons**
-- Harder to implement more complex reload behaviour (need to abstract init code into functions that can be rerun from ```__reload```)
-- Not clear when ```__reload``` is actually run (I've seen people duplicate module init behaviour in ```__reload``` function, so init code gets run twice).
-- Different to webpack
-
-### Javascript Plugin Reload Hook Proposal #2
-Identical to proposal #1, however standard module init code is not run, only ```__reload``` function, essentially acting as an
-alternate module constructor.
-
-**Pros**
-- Clear separation between reload behaviour and standard module initialisation
-- ```__reload``` is now clearly init code
-- How webpack does this (I think?) and so will be familiar for people moving over.
-
-**Cons**
-- Harder to implement more complex reload behaviour (need to abstract init code into functions that can be rerun from ```__reload```)
-- Actually don't think this is even possible in SystemJS currently.
-
-### Javascript Plugin Reload Hook Proposal #3
-\#1 and #2 work well until you want to incorporate more complex reload logic into your standard module initialisation code.
-
-This approach would be to pass in the old module version instance as a 'local/global' variable directly available to the module.
-This would allow for more complex handling of reload logic when required.
-
-Example
-```js
-...
-
-let foo = () => {};
-
-if (module.previous) {
-    foo = () => true
-}
-
-export {foo}
-
-...
-```
-
-Cleaning up reload behaviour for production (if required) could be easily handled via dead code removal
-(via JSPM's ``` bundle --production ``` flag?).
-
-This implementation would be my personal preference.
-
-**Pros**
-- Super clear what is init code and what isn't
-- Easy to implement more complex reload behaviour
-- Kinda like how webpack does this and so aspects will be familiar for people moving over (closer then #1)
-
-**Cons**
-- Blurs the lines between reload behaviour and standard module initialisation... kinda (Don't think this is actually serious)
-- Not actually how webpack does this...
+### See https://github.com/alexisvincent/systemjs-hmr/issues/2 for current proposals
 
 ## Reload API
 

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HMR - Experimental Testing</title>
+    <script src="jspm_packages/system.js"></script>
+    <script src="jspm.config.js"></script>
+</head>
+<body>
+<script>
+    System.import('app/app.js').then(m => {
+        console.log('Loaded app.js')
+    })
+</script>
+</body>
+</html>

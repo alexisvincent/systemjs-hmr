@@ -19,7 +19,8 @@
     "url": "https://github.com/alexisvincent/systemjs-hmr/issues"
   },
   "homepage": "https://github.com/alexisvincent/systemjs-hmr#readme",
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "babel-cli": "^6.16.0",
     "babel-preset-es2015": "^6.16.0"

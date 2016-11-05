@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "start": "serve ."
+  },
+  "jspm": {
+    "name": "hmr-test",
+    "main": "hmr-test.js",
+    "dependencies": {
+      "systemjs-hmr": "local:systemjs-hmr@0.0.5"
+    },
+    "devDependencies": {
+      "plugin-babel": "npm:systemjs-plugin-babel@^0.0.17"
+    }
+  },
+  "dependencies": {
+    "jspm-devtools": "^1.1.11"
+  }
+}

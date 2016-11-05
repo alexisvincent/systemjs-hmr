@@ -1,80 +1,123 @@
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var originalSystemImport = null;
+var originalSystemImport = System.import;
 var lastFailedSystemImport = null;
 var failedReimport = null;
 var currentHotReload = Promise.resolve();
 var modulesJustDeleted = null;
-var clientImportedModules = null;
+var clientImportedModules = [];
 
 var d = function d() {
-    // console.log(
-    //     segments.reduce(
-    //         (message, segment) => message + " " + segment))
+    for (var _len = arguments.length, segments = Array(_len), _key = 0; _key < _len; _key++) {
+        segments[_key] = arguments[_key];
+    }
+
+    console.log(segments.reduce(function (message, segment) {
+        return message + " " + segment;
+    }));
 };
 
-var getModuleRecord = function getModuleRecord(moduleName) {
-    return System.normalize(moduleName).then(function (normalizedName) {
-        var aModule = System._loader.moduleRecords[normalizedName];
-        if (!aModule) {
-            var _ret = function () {
-                aModule = System.loads[normalizedName];
-                if (aModule) {
-                    return {
-                        v: aModule
-                    };
-                }
-                var fullModulePath = location.origin + '/' + moduleName;
-                var loadsKey = Object.keys(System.loads).find(function (n) {
-                    return n.indexOf(fullModulePath) !== -1 || System.loads[n].address.indexOf(fullModulePath) !== -1;
-                });
-                // normalize does not yield a key which would match the key used in System.loads, so we have to improvise a bit
-                // also, the module name may not match the address for plugins making use of the SystemJS locate hook,
-                //   so check the address also
-                if (loadsKey) {
-                    return {
-                        v: System.loads[loadsKey]
-                    };
-                }
-                throw new Error('module was not found in Systemjs moduleRecords');
-            }();
+// We need trace == true for now
+if (!System.trace) console.warn('System.trace must be set to true via configuration before loading modules to hot-reload.');
 
-            if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-        }
-        return aModule;
+// Augment System.import (catch errors and save imported modules)
+System.import = function () {
+    var args = arguments;
+
+    // save all imported files to 'clientImportedModules'
+    clientImportedModules.push(args[0]);
+
+    return originalSystemImport.apply(System, arguments).catch(function (e) {
+
+        // If an import fails, save the import, so that we can try again later
+        lastFailedSystemImport = args;
+
+        // Pass the exception on
+        throw e;
     });
 };
 
+// Get module information
+var getModuleRecord = function getModuleRecord(moduleName) {
+    return System.normalize(moduleName).then(function (normalizedName) {
+
+        // Look for moduleName in moduleRocords
+        var aModule = System._loader.moduleRecords[normalizedName];
+
+        if (aModule) return aModule;
+
+        // Look for moduleName in loads
+        aModule = System.loads[normalizedName];
+        if (aModule) return aModule;
+
+        // Couldn't find the module in either moduleRecords or loads.
+        // Try find full module path in loads
+
+        // Can we find the full module path in System.loads
+        var fullModulePath = location.origin + '/' + moduleName;
+        var loadsKey = Object.keys(System.loads).find(function (n) {
+            return n.indexOf(fullModulePath) != -1 || System.loads[n].address.indexOf(fullModulePath) != -1;
+        });
+
+        // normalize does not yield a key which would match the key used in System.loads, so we have to improvise a bit
+        // also, the module name may not match the address for plugins making use of the SystemJS locate hook,
+        //   so check the address also
+        if (loadsKey) return System.loads[loadsKey];
+
+        throw new Error('module was not found in Systemjs moduleRecords');
+    });
+};
+
+/**
+ * Add importers key to all modules in moduleMap, containing all files that depend on it
+ * @param moduleMap
+ * @param overwriteOlds
+ */
 var pushImporters = function pushImporters(moduleMap, overwriteOlds) {
+
+    // Run through all modules in moduleMap
     Object.keys(moduleMap).forEach(function (moduleName) {
+        // Resolve the module from System.loads
         var mod = System.loads[moduleName];
-        if (!mod.importers) {
-            mod.importers = [];
-        }
+
+        // If it doesn't already have an importers key, add it
+        if (!mod.importers) mod.importers = [];
+
+        // Run through all dependencies of the module
         mod.deps.forEach(function (dependantName) {
+            //resolve the module from loads
             var normalizedDependantName = mod.depMap[dependantName];
             var dependantMod = System.loads[normalizedDependantName];
-            if (!dependantMod) {
-                return;
-            }
-            if (!dependantMod.importers) {
-                dependantMod.importers = [];
-            }
+
+            // If we couldnt find a module, return
+            if (!dependantMod) return;
+
+            // If it doesn't already have an importers key, add it
+            if (!dependantMod.importers) dependantMod.importers = [];
+
             if (overwriteOlds) {
+                // Get count of current importers
                 var imsIndex = dependantMod.importers.length;
+
+                // run through dependantMod importer
                 while (imsIndex--) {
+                    //check if parent is in dependantMod importers list
                     if (dependantMod.importers[imsIndex].name === mod.name) {
+                        // if so, overwrite it and return
                         dependantMod.importers[imsIndex] = mod;
                         return;
                     }
                 }
             }
+
+            // Add parent module as importer
             dependantMod.importers.push(mod);
         });
     });
 };
+
+// Push initial importers
+pushImporters(System.loads);
 
 var reImportRootModules = function reImportRootModules(toReimport, start) {
     var promises = toReimport.map(function (moduleName) {
@@ -107,9 +150,12 @@ var reImportRootModules = function reImportRootModules(toReimport, start) {
 
 var deleteModule = function deleteModule(moduleToDelete, from) {
     var name = moduleToDelete.name;
+    // if module is not in the modulesJustDeleted registry
     if (!modulesJustDeleted[name]) {
         var exportedValue = void 0;
+        // add module to modulesJustDeleted registry
         modulesJustDeleted[name] = moduleToDelete;
+
         if (!moduleToDelete.exports) {
             // this is a module from System.loads
             exportedValue = System.get(name);
@@ -164,11 +210,10 @@ var reload = function reload(moduleName) {
             toReimport.push(module.name);
         } else {
             var deleted = deleteAllImporters(module);
+
             if (deleted.find(function (res) {
                 return res === false;
-            }) !== undefined) {
-                toReimport.push(module.name);
-            }
+            })) toReimport.push(module.name);
         }
         d('toReimport', toReimport);
         if (toReimport.length === 0) {
@@ -197,26 +242,3 @@ System.reload = function (moduleName) {
 
     return Promise.resolve(true);
 };
-
-var init = function init() {
-
-    if (System.trace !== true) {
-        console.warn('System.trace must be set to true via configuration before loading modules to hot-reload.');
-    }
-
-    originalSystemImport = System.import;
-
-    clientImportedModules = [];
-    System.import = function () {
-        var args = arguments;
-        clientImportedModules.push(args[0]);
-        return originalSystemImport.apply(System, arguments).catch(function (err) {
-            lastFailedSystemImport = args;
-            throw err;
-        });
-    };
-
-    pushImporters(System.loads);
-};
-
-init();

@@ -24,7 +24,9 @@ if (!System.trace) console.warn('System.trace needs to be set for reloading to f
 // Whenever using _System, bind in the System object. So for example
 // _System.normalize.apply(System, ["someModule"])
 var _System = _extends({
-    __proto__: _extends({}, System.__proto__.__proto__, System.__proto__)
+    __proto__: _extends({
+        __proto__: _extends({}, System.__proto__.__proto__)
+    }, System.__proto__)
 }, System);
 
 // Stores state systemjs-hmr needs access to

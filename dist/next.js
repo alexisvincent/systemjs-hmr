@@ -22,7 +22,7 @@ if (!System.trace) console.warn('System.trace needs to be set for reloading to f
 
 // Maintain a reference to all properties of the unpatched SystemJS object
 // Whenever using _System, bind in the System object. So for example
-// _System.normalize.apply(System, "someModule")
+// _System.normalize.apply(System, ["someModule"])
 var _System = _extends({
     __proto__: _extends({}, System.__proto__.__proto__, System.__proto__)
 }, System);
@@ -197,7 +197,7 @@ var reload = System.reload = function (moduleName) {
     }
 
     reloader.lock.then(function () {
-        return reloader.lock = _System.normalize.apply(System, moduleName).then(function (name) {
+        return reloader.lock = _System.normalize.apply(System, [moduleName]).then(function (name) {
             return findDependants(name);
         }).then(function (_ref4) {
             var dependants = _ref4.dependants,

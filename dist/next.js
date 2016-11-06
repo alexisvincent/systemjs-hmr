@@ -21,6 +21,8 @@ var System = window.SystemJS;
 if (!System.trace) console.warn('System.trace needs to be set for reloading to function');
 
 // Maintain a reference to all properties of the unpatched SystemJS object
+// Whenever using _System, bind in the System object. So for example
+// _System.normalize.apply(System, "someModule")
 var _System = _extends({
     __proto__: _extends({}, System.__proto__.__proto__, System.__proto__)
 }, System);

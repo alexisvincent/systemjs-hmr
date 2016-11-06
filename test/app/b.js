@@ -2,15 +2,18 @@
  * Created by alexisvincent on 2016/11/05.
  */
 
-import { module } from '@hot'
+import { module, _state } from '@hot'
 
-if (module)
+console.log("state", _state)
+
+_state.inc = _state.inc || 0
+_state.inc++
+
+if (module) {
+    module.__unload()
     console.log("Module State", module.state)
+}
 
-console.log("b.js second")
+export const __unload = () => console.log("lol")
 
-const state = "two"
-
-export {state}
-
-export default "b.js exported string"
+export const state = "two"

@@ -26,7 +26,13 @@ _System.__proto__ = _extends({}, System.__proto__);
 
 // Attach the reloader object (systemjs-hmr state, dependency trees, cache, etc)
 var reloader = System.reloader = {
-    registry: new Map()
+    registry: new Map(),
+    _persistantRegistry: {},
+    _getState: function _getState(name) {
+        if (!reloader._persistantRegistry[name]) reloader._persistantRegistry[name] = {};
+
+        return reloader._persistantRegistry[name];
+    }
 };
 
 /**
@@ -144,7 +150,8 @@ System.set('@@hot', System.newModule({
         var address = _ref4.address;
 
         return {
-            module: reloader.registry.get(address) || false
+            module: reloader.registry.get(address) || false,
+            _state: reloader._getState(address)
         };
     }
 }));

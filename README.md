@@ -26,7 +26,7 @@ meta has the following (all optional) keys (but the API is still being built so 
 
 `roots : [String]`
 An array of top level entry points into the application. If entry points aren't provided, systemjs-hmr will attempt to discover them
-automatically by determining which modules depend on moduleName, and are not imported by other modules. This only works when there are
+automatically by determining which modules depend on `moduleName`, and are not imported by other modules. This only works when there are
 no circular dependencies involving roots.
 
 `others` Other options will be exposed to speedup the reload process. For example, pre-calculated dependency trees, pre-fetched module sources, etc.

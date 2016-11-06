@@ -3,6 +3,8 @@ jspm_packages
 .idea
 systemjs-hmr.iml
 
+npm-debug.log
+
 ### OSX template
 .DS_Store
 .AppleDouble

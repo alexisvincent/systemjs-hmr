@@ -27,9 +27,14 @@ var _System = _extends({
 
 // Stores state systemjs-hmr needs access to
 var reloader = System.reloader = {
+    // promise lock so that only one reload process can happen at a time
+    lock: Promise.resolve(true),
 
     // Maps normalized module names to their previous instance
     registry: new Map(),
+
+    // Maps normalized module names to cached sources (for faster reload)
+    // loadCache: new Map(),
 
     // **Experimental** Construct a per module persistent object
     _persistentRegistry: {},
@@ -83,6 +88,31 @@ System.set('@@hot', System.newModule({
         };
     }
 }));
+
+/**
+ * Store a reference to the loader used to import local cached modules
+ */
+// System.set('cache-loader', System.newModule({
+//     fetch: function (loads) {
+//
+//         console.log("loading from cache", loads)
+//
+//         const cache = reloader.loadCache.get(loads.address)
+//         const source = cache ? cache.source : false
+//
+//         if (source)
+//             return Promise.resolve(source)
+//
+//         if (cache)
+//             System.meta[loads.address] = cache.meta
+//
+//         else System.meta[loads.address] = {}
+//
+//         console.log('nop', System.meta[loads.address])
+//
+//         return _System.fetch.apply(System, loads)
+//     }
+// }))
 
 /**
  * Return normalized names of all modules that import this module
@@ -164,41 +194,64 @@ var reload = System.reload = function (moduleName) {
         if (meta.roots == undefined) meta.roots = false;else throw new Error("When calling System.reload(_, meta), meta.roots should me an array of normalized module names");
     }
 
-    _System.normalize(moduleName).then(function (name) {
-        return findDependants(name);
-    }).then(function (_ref4) {
-        var dependants = _ref4.dependants,
-            roots = _ref4.roots;
+    reloader.lock.then(function () {
+        return reloader.lock = _System.normalize(moduleName).then(function (name) {
+            return findDependants(name);
+        }).then(function (_ref4) {
+            var dependants = _ref4.dependants,
+                roots = _ref4.roots;
 
-        // Delete all dependent modules
-        Promise.all(dependants.map(function (dependant) {
+            // Delete all dependent modules
 
-            // Get reference to module definition so that we can determine dependencies
-            var dep = System.defined[dependant];
+            return Promise.all(dependants.map(function (dependent) {
 
-            /**
-             * If the module imports @hot, save a reference to it (to save space in the registry).
-             * The only time this is problematic is if someone adds an import to @hot. Then on the first reload,
-             * we won't have a reference to the old module. But on all subsequent reloads we will. Not an issue
-             * since the person will be in the process of adding reload support to a module and will be thinking
-             * about this case.
-             */
-            if (dep.deps.find(function (name) {
-                return name == '@hot';
-            })) reloader.registry.set(dependant, System.get(dependant));
+                // Get reference to module definition so that we can determine dependencies
+                var dep = System.defined[dependent];
 
-            return Promise.all([
-            // Delete the module from the registry
-            System.delete(dependant),
-            // And the module provided by the loader (So that a new module can be created upon reload)
-            System.delete(dependant + '!@@hot')]);
-        })).then(function () {
-            return (
-                // If roots have been specified in meta, load those, otherwise load our best guess
-                (meta.roots ? meta.roots : roots).map(function (root) {
-                    return System.load(root);
-                })
-            );
+                /**
+                 * If the module imports @hot, save a reference to it (to save space in the registry).
+                 * The only time this is problematic is if someone adds an import to @hot. Then on the first reload,
+                 * we won't have a reference to the old module. But on all subsequent reloads we will. Not an issue
+                 * since the person will be in the process of adding reload support to a module and will be thinking
+                 * about this case.
+                 */
+                if (dep.deps.find(function (name) {
+                    return name == '@hot';
+                })) reloader.registry.set(dependent, System.get(dependent));
+
+                // Not sure if this is dangerous or not
+                // We could also do this by overriding System.loads, but this feels cleaner
+                // Should also only do this if a pre-compiled source is passed
+                // commented out for now until i have more time to explore this
+                // if (false) {
+                //     reloader.loadCache.set(dependent, {
+                //         meta: System.meta[dependent],
+                //         source: false
+                //     })
+                //
+                //     if (System.meta[dependent])
+                //         System.meta[dependent] = {...System.meta[dependent]}
+                //     else
+                //         System.meta[dependent] = {}
+                //
+                //     System.meta[dependent].loader = 'cache-loader'
+                // }
+
+                return Promise.all([
+                // Delete the module from the registry
+                System.delete(dependent),
+                // And the module provided by the loader (So that a new module can be created upon reload)
+                System.delete(dependent + '!@@hot')]);
+            })).then(function () {
+                return (
+                    // If roots have been specified in meta, load those, otherwise load our best guess
+                    (meta.roots ? meta.roots : roots).map(function (root) {
+                        return System.load(root);
+                    })
+                );
+            }).then(function () {
+                reloader.loadCache.clear();
+            });
         });
     });
 };

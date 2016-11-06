@@ -19,8 +19,8 @@ or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools)
 SystemJS.reload(moduleName, meta)
 ```
 Where
-- moduleName is a String of the same kind you would provide to ```System.load``` or ```System.import``` when importing a module.
-- meta is an optional object containing information to help speedup the reload process (module sources, dependency trees, etc.)
+- `moduleName` is a String of the same kind you would provide to ```System.load``` or ```System.import``` when importing a module.
+- `meta` is an optional object containing information to help speedup the reload process (module sources, dependency trees, etc.)
 
 meta has the following (all optional) keys (but the API is still being built so you can expect this to change)
 

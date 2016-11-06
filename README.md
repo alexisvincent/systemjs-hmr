@@ -3,7 +3,7 @@ Hot module replacement primatives for SystemJS
 
 SystemJS HMR currently extends SystemJS with a ```System.reload``` function and proposes a new `unload` loader plugin hook.
 
-##Goal
+## Goal
 The goal of this project is to implement HMR primitives for SystemJS that can be battle tested and later added to the core project.
 ***SystemJS HMR*** is meant to be used as an HMR enabler for library creators rather then providing a full HMR experience
 for application developers, if you're looking to implement HMR in your own project take a look at
@@ -14,7 +14,31 @@ This project will only implement the logic required to enable HMR,
 and as such things akin to the eventing api found in [capaj/systemjs-hot-reloader](https://github.com/capaj/systemjs-hot-reloader) 
 or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools) are left to the library/application developer.
 
-## Reload API
+## Usage
+Install with your client-side package manager
+- `jspm install npm:systemjs-hmr`
+- `yarn add systemjs-hmr`
+- `npm install systemjs-hmr`
+
+Then import systemjs-hmr **before** importing your app code.
+```html
+<script>
+    // The new reloader api is in dist/next.js
+    System.import('systemjs-hmr/dist/next.js')
+    System.import('app/app.js')
+</script>
+```
+
+or for the old (current systemjs-hot-reloader) behaviour
+```html
+<script>
+    System.import('systemjs-hmr')
+    System.import('app/app.js')
+</script>
+```
+
+
+### Reload API
 ```js
 SystemJS.reload(moduleName, meta)
 ```
@@ -31,8 +55,8 @@ no circular dependencies involving roots.
 
 `others` Other options will be exposed to speedup the reload process. For example, pre-calculated dependency trees, pre-fetched module sources, etc.
 
-## State Hydration and Safe Unloads 
-### (see [#2](https://github.com/alexisvincent/systemjs-hmr/issues/2) for discussion / proposals)
+### State Hydration and Safe Unloads 
+#### (see [#2](https://github.com/alexisvincent/systemjs-hmr/issues/2) for discussion / proposals)
 
 ```javascript
 // You can import the previous module instance from '@hot'

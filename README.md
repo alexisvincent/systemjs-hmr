@@ -1,5 +1,5 @@
 # SystemJS HMR
-Hot module replacement primatives for SystemJS
+Hot module replacement primatives for SystemJS.
 
 SystemJS HMR currently extends SystemJS with a ```System.reload``` function and proposes a new `unload` loader plugin hook.
 
@@ -7,7 +7,8 @@ SystemJS HMR currently extends SystemJS with a ```System.reload``` function and 
 The goal of this project is to implement HMR primitives for SystemJS that can be battle tested and later added to the core project.
 ***SystemJS HMR*** is meant to be used as an HMR enabler for library creators rather then providing a full HMR experience
 for application developers, if you're looking to implement HMR in your own project take a look at
-[capaj/systemjs-hot-reloader](https://github.com/capaj/systemjs-hot-reloader) or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools).
+[capaj/systemjs-hot-reloader](https://github.com/capaj/systemjs-hot-reloader) or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools)
+both of which use now this project under the hood.
 
 We want to introduce a minimal API change to SystemJS and build in such a fashion as to enable smooth assimilation into core further down the line.
 This project will only implement the logic required to enable HMR,

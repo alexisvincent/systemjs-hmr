@@ -1,7 +1,5 @@
 # SystemJS HMR
-Hot module replacement primatives for SystemJS.
-
-SystemJS HMR currently extends SystemJS with a ```System.reload``` function and proposes a new `unload` loader plugin hook.
+SystemJS-HMR provides hot module replacement primitives for SystemJS via a ```System.reload``` function and proposes a new `unload` loader plugin hook.
 
 ## Goal
 The goal of this project is to implement HMR primitives for SystemJS that can be battle tested and later added to the core project.

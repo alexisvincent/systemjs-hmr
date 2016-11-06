@@ -19,15 +19,25 @@
     "url": "https://github.com/alexisvincent/systemjs-hmr/issues"
   },
   "homepage": "https://github.com/alexisvincent/systemjs-hmr#readme",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-cli": "^6.16.0",
-    "babel-preset-es2015": "^6.16.0"
+    "babel-plugin-transform-object-rest-spread": "^6.16.0",
+    "babel-preset-es2015": "^6.18.0",
+    "chokidar": "^1.6.1"
   },
   "babel": {
     "presets": [
       "es2015"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+
     ]
+  },
+  "jspm": {
+    "map": {
+      "next": "./dist/next.js"
+    }
   }
 }

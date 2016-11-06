@@ -47,9 +47,9 @@ module.js
 ...
 
 export function __unload() {
-    unsubscribeFromListener();
-    cleanupOtherStuff();
-    ...
+    unsubscribeFromListener()
+    cleanupOtherStuff()
+    
 }
 ```
 
@@ -84,10 +84,15 @@ optionally exported plugin reload hook.
 Finally, all that is left for this project is to expose the following new SystemJS extension.
 
 ```js
-SystemJS.reload(moduleName, moduleSource)
+SystemJS.reload(moduleName, meta)
 ```
 Where
 - moduleName is a String of the same kind you would provide to ```System.import``` if importing a module.
+- meta is an object containing information to help speedup the reload process (module sources, dependency trees, etc.)
+
+
+
+
 - moduleSource is an optional String parameter containing the source code of the module that SystemJS would fetch if
 ```System.import(moduleName)``` was called.
 

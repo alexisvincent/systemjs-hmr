@@ -8,9 +8,8 @@
 </head>
 <body>
 <script>
-    System.import('app/app.js').then(m => {
-        console.log('Loaded app.js')
-    })
+    System.import('systemjs-hmr/dist/next')
+            .then(() => System.import('app/app.js'))
 </script>
 </body>
 </html>

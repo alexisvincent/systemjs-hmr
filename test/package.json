@@ -13,6 +13,5 @@
     }
   },
   "dependencies": {
-    "jspm-devtools": "^1.1.11"
   }
 }

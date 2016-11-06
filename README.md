@@ -6,7 +6,7 @@ The goal of this project is to implement HMR primitives for SystemJS that can be
 ***SystemJS HMR*** is meant to be used as an HMR enabler for library creators rather then providing a full HMR experience
 for application developers, if you're looking to implement HMR in your own project take a look at
 [capaj/systemjs-hot-reloader](https://github.com/capaj/systemjs-hot-reloader) or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools)
-both of which use now this project under the hood.
+both of which now use this project under the hood.
 
 We want to introduce a minimal API change to SystemJS and build in such a fashion as to enable smooth assimilation into core further down the line.
 This project will only implement the logic required to enable HMR,
@@ -94,7 +94,7 @@ for new users and proper HMR support will go a long way to increase developer in
 
 ## Loader Plugin Unload Hook Proposal
 In a traditional application one does not usually have to deal with modules being deleted/unloaded, naturally HMR requires
-us to start thinking about what happens when we unload a module in-order to replace it. Now unloading ```js``` is naturally
+us to start thinking about what happens when we unload a module in-order to replace it. Now unloading ```javascript``` is naturally
 different then say to ```css```. With ```javascript``` we need to let the module itself handle some of the unloading
 (unsubscribing from event listeners, unmounting dom nodes, etc) and then delete it from the SystemJS registry.
 With ```css``` however, we simply need to delete the *link* node from the DOM.

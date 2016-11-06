@@ -1,6 +1,6 @@
 {
   "name": "systemjs-hmr",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Hot Module Replacement Extention for SystemJS",
   "main": "dist/index.js",
   "scripts": {

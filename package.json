@@ -19,7 +19,9 @@
     "url": "https://github.com/alexisvincent/systemjs-hmr/issues"
   },
   "homepage": "https://github.com/alexisvincent/systemjs-hmr#readme",
-  "dependencies": {},
+  "dependencies": {
+    "ajv": "^4.8.2"
+  },
   "devDependencies": {
     "babel-cli": "^6.16.0",
     "babel-plugin-transform-object-rest-spread": "^6.16.0",

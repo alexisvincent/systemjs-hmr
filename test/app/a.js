@@ -1,6 +1,7 @@
 /**
  * Created by alexisvincent on 2016/11/05.
  */
+import 'systemjs-hmr/dist/next.js'
 
 import b from './b.js'
 

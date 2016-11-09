@@ -142,7 +142,9 @@ var findDirectDependants = function findDirectDependants(moduleName) {
 var findDependants = function findDependants(moduleName) {
 
     // A queue of modules to explore next, starting with moduleName
-    var next = [moduleName];
+    var next = [];
+
+    if (System.defined[moduleName]) next.push(moduleName);
 
     // A Set of all modules that depend on this one (includes moduleName)
     var dependents = new Set();

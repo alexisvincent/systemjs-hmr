@@ -124,14 +124,10 @@ System.set('@@hot', System.newModule({
  * @returns {Array}
  */
 var findDirectDependants = function findDirectDependants(moduleName) {
-    return Object.values(System.defined).filter(function (_ref2) {
-        var normalizedDeps = _ref2.normalizedDeps;
-        return normalizedDeps.find(function (name) {
+    return Object.keys(System.defined).filter(function (key) {
+        return (System.defined[key].normalizedDeps || []).find(function (name) {
             return name == moduleName;
         });
-    }).map(function (_ref3) {
-        var name = _ref3.name;
-        return name;
     });
 };
 
@@ -144,7 +140,9 @@ var findDirectDependants = function findDirectDependants(moduleName) {
 var findDependants = function findDependants(moduleName) {
 
     // A queue of modules to explore next, starting with moduleName
-    var next = [moduleName];
+    var next = [];
+
+    if (System.defined[moduleName]) next.push(moduleName);
 
     // A Set of all modules that depend on this one (includes moduleName)
     var dependents = new Set();
@@ -201,9 +199,9 @@ var reload = System.reload = function (moduleName) {
     reloader.lock.then(function () {
         return reloader.lock = _System.normalize.apply(System, [moduleName]).then(function (name) {
             return findDependants(name);
-        }).then(function (_ref4) {
-            var dependants = _ref4.dependants,
-                roots = _ref4.roots;
+        }).then(function (_ref2) {
+            var dependants = _ref2.dependants,
+                roots = _ref2.roots;
 
             // Delete all dependent modules
 

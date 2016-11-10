@@ -128,8 +128,6 @@ var findDirectDependants = function findDirectDependants(moduleName) {
         return (System.defined[key].normalizedDeps || []).find(function (name) {
             return name == moduleName;
         });
-    }).map(function (key) {
-        return System.defined[key].name;
     });
 };
 

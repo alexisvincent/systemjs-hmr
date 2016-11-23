@@ -37,9 +37,6 @@ var reloader = System.reloader = {
     // Maps normalized module names to their previous instance
     registry: new Map(),
 
-    // Maps normalized module names to cached sources (for faster reload)
-    // loadCache: new Map(),
-
     // **Experimental** Construct a per module persistent object
     _persistentRegistry: {},
     _getState: function _getState(name) {
@@ -92,31 +89,6 @@ System.set('@@hot', System.newModule({
         };
     }
 }));
-
-/**
- * Store a reference to the loader used to import local cached modules
- */
-// System.set('cache-loader', System.newModule({
-//     fetch: function (loads) {
-//
-//         console.log("loading from cache", loads)
-//
-//         const cache = reloader.loadCache.get(loads.address)
-//         const source = cache ? cache.source : false
-//
-//         if (source)
-//             return Promise.resolve(source)
-//
-//         if (cache)
-//             System.meta[loads.address] = cache.meta
-//
-//         else System.meta[loads.address] = {}
-//
-//         console.log('nop', System.meta[loads.address])
-//
-//         return _System.fetch.apply(System, loads)
-//     }
-// }))
 
 /**
  * Return normalized names of all modules that import this module
@@ -196,8 +168,15 @@ var reload = System.reload = function (moduleName) {
         if (meta.roots == undefined) meta.roots = false;else throw new Error("When calling System.reload(_, meta), meta.roots should me an array of normalized module names");
     }
 
-    reloader.lock.then(function () {
-        return reloader.lock = _System.normalize.apply(System, [moduleName]).then(function (name) {
+    /**
+     * Allow people to pass in a set of modules to load after deleting dependants and before importing the roots.
+     * For now this is mocked with an empty array.
+     * @type {Array}
+     */
+    meta.preload = [];
+
+    return reloader.lock = reloader.lock.then(function () {
+        return _System.normalize.apply(System, [moduleName]).then(function (name) {
             return findDependants(name);
         }).then(function (_ref2) {
             var dependants = _ref2.dependants,
@@ -221,30 +200,18 @@ var reload = System.reload = function (moduleName) {
                     return name == '@hot';
                 })) reloader.registry.set(dependent, System.get(dependent));
 
-                // Not sure if this is dangerous or not
-                // We could also do this by overriding System.loads, but this feels cleaner
-                // Should also only do this if a pre-compiled source is passed
-                // commented out for now until i have more time to explore this
-                // if (false) {
-                //     reloader.loadCache.set(dependent, {
-                //         meta: System.meta[dependent],
-                //         source: false
-                //     })
-                //
-                //     if (System.meta[dependent])
-                //         System.meta[dependent] = {...System.meta[dependent]}
-                //     else
-                //         System.meta[dependent] = {}
-                //
-                //     System.meta[dependent].loader = 'cache-loader'
-                // }
-
                 return Promise.all([
                 // Delete the module from the registry
                 System.delete(dependent),
                 // And the module provided by the loader (So that a new module can be created upon reload)
                 System.delete(dependent + '!@@hot')]);
             })).then(function () {
+                Promise.all(meta.preload.map(function (_ref3) {
+                    var name = _ref3.name,
+                        source = _ref3.source;
+                    return System.load(name);
+                }));
+            }).then(function () {
                 return (
                     // If roots have been specified in meta, load those, otherwise load our best guess
                     (meta.roots ? meta.roots : roots).map(function (root) {

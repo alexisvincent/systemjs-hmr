@@ -13,6 +13,15 @@ This project will only implement the logic required to enable HMR,
 and as such things akin to the eventing api found in [capaj/systemjs-hot-reloader](https://github.com/capaj/systemjs-hot-reloader) 
 or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools) are left to the library/application developer.
 
+## Roadmap
+- [x] construct functioning reload mechanism
+- [x] state hydration mechanisms
+- [ ] [bundle](https://github.com/alexisvincent/systemjs-hmr/issues/10)
+- [ ] [robustness (better error handling)](https://github.com/alexisvincent/systemjs-hmr/issues/11)
+- [ ] [preemptive file loading **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
+- [ ] [prevent reloading dependants **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
+- [ ] [use trace API in SystemJS 0.20](https://github.com/alexisvincent/systemjs-hmr/issues/6)
+
 ## Usage
 Install with your client-side package manager
 - `jspm install npm:systemjs-hmr`

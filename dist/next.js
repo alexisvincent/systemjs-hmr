@@ -214,7 +214,7 @@ var reload = System.reload = function (moduleName) {
             }).then(function () {
                 return (
                     // If roots have been specified in meta, load those, otherwise load our best guess
-                    (meta.roots ? meta.roots : roots).map(function (root) {
+                    (meta.roots ? meta.roots : roots).map(System.normalizeSync).map(function (root) {
                         return System.load(root);
                     })
                 );

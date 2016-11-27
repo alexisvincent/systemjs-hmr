@@ -184,6 +184,8 @@ var reload = System.reload = function (moduleName) {
 
             // Delete all dependent modules
 
+            if (roots.length == 0 && meta.roots.length == 0) console.warn('systemjs-hmr: We couldn\'t detect any roots (entry points), this usually', 'means you have a circular dependency in your app code. This isn\'t a problem,', 'it just means that you need to specify {roots: [ ...roots ]} as the second argument', 'to System.reload. You can read more here: https://github.com/alexisvincent/systemjs-hmr#reload-api.', 'This is typically a library level concern, so if you are using a library that provides hot module replacement,', 'check how they handle entry points, or if they don\'t, open an issue with the library.');
+
             return Promise.all(dependants.map(function (dependent) {
 
                 // Get reference to module definition so that we can determine dependencies

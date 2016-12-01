@@ -237,6 +237,8 @@ System.reload = function (moduleName) {
         // chain promises TODO we can solve this better- this often leads to the same module being reloaded mutliple times
         currentHotReload = currentHotReload.then(function () {
             return reload(moduleName);
+        }).catch(function (err) {
+            return console.log(err);
         });
     }
 

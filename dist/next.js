@@ -225,5 +225,7 @@ var reload = System.reload = function (moduleName) {
             //     reloader.loadCache.clear()
             // })
         });
+    }).catch(function (err) {
+        return console.log(err);
     });
 };

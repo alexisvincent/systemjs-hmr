@@ -1,17 +1,23 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.setDebugLogging = setDebugLogging;
 var originalSystemImport = System.import;
 var lastFailedSystemImport = null;
 var failedReimport = null;
 var currentHotReload = Promise.resolve();
 var modulesJustDeleted = null;
 var clientImportedModules = [];
+var debugLogging = true;
 
 var d = function d() {
     for (var _len = arguments.length, segments = Array(_len), _key = 0; _key < _len; _key++) {
         segments[_key] = arguments[_key];
     }
 
+    if (!debugLogging) return;
     console.log(segments.reduce(function (message, segment) {
         return message + " " + segment;
     }));
@@ -244,3 +250,7 @@ System.reload = function (moduleName) {
 
     return Promise.resolve(true);
 };
+
+function setDebugLogging(value) {
+    debugLogging = value;
+}

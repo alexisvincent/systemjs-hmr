@@ -16,8 +16,12 @@ or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools)
 ## Roadmap
 - [x] construct functioning reload mechanism
 - [x] state hydration mechanisms
-- [ ] [bundle](https://github.com/alexisvincent/systemjs-hmr/issues/10)
+- [ ] set SystemJS.trace = true automatically
+- [ ] disable HMR in production
+- [ ] backwards compatibility for old `__unload` and `__reload` with deprecation
+- [ ] speed up `findDependents` via an internal cache
 - [ ] [robustness (better error handling)](https://github.com/alexisvincent/systemjs-hmr/issues/11)
+- [ ] [bundle](https://github.com/alexisvincent/systemjs-hmr/issues/10)
 - [ ] [preemptive file loading **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
 - [ ] [prevent reloading dependants **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
 - [ ] [use trace API in SystemJS 0.20](https://github.com/alexisvincent/systemjs-hmr/issues/6)
@@ -31,17 +35,20 @@ Install with your client-side package manager
 Then import systemjs-hmr **before** importing your app code.
 ```html
 <script>
-    // The new reloader api is in dist/next.js
-    System.import('systemjs-hmr/dist/next.js')
-    System.import('app/app.js')
+    System.trace = true
+    System.import('systemjs-hmr/next').then(() => {
+        System.import('app/app.js')
+    })
 </script>
 ```
 
 or for the old (current systemjs-hot-reloader) behaviour
 ```html
 <script>
-    System.import('systemjs-hmr')
-    System.import('app/app.js')
+    System.trace = true
+    System.import('systemjs-hmr').then(() => {
+        System.import('app/app.js')
+    })
 </script>
 ```
 

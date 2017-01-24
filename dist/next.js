@@ -2,14 +2,19 @@
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * Copyright 2016 Alexis Vincent (http://alexisvincent.io)
+                                                                                                                                                                                                                                                                   */
+// import ajv from 'ajv'
+
+
+var _debug = require('debug');
+
+var _debug2 = _interopRequireDefault(_debug);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-/**
- * Copyright 2016 Alexis Vincent (http://alexisvincent.io)
- */
-// import ajv from 'ajv'
 
 // Make sure SystemJS has loaded
 if (!window.System && !!window.SystemJS) console.warn('The systemjs-hmr polyfill must be loading after SystemJS has loaded');
@@ -30,7 +35,7 @@ var _System = _extends({
 }, System);
 
 // Stores state systemjs-hmr needs access to
-var reloader = System.reloader = {
+var reloader = System._reloader = {
   // promise lock so that only one reload process can happen at a time
   lock: Promise.resolve(true),
 
@@ -43,11 +48,14 @@ var reloader = System.reloader = {
   }
 };
 
+// Given the importers module name, returns the name used to store its '@hot' previous instance module
 var getHotName = function getHotName(moduleName) {
   return moduleName + '@hot';
 };
 
 var createHotModule = function createHotModule(moduleName) {
+  (0, _debug2.default)('systemjs-hmr:createHotModule')(moduleName);
+
   if (!System.has(getHotName(moduleName))) {
     return System.newModule({
       // Get previous instance of module
@@ -64,12 +72,18 @@ var createHotModule = function createHotModule(moduleName) {
   }
 };
 
+/**
+ * Used in System.normalize and System.normalizeSync to normalize @hot to its module
+ * and create a hot module if none exists.
+ * @param parentName
+ */
 var normalizeHot = function normalizeHot(parentName) {
   var hotName = getHotName(parentName);
 
   // No hotmodule exists, make and set one
   if (!System.has(hotName)) System.set(hotName, createHotModule(parentName));
 
+  (0, _debug2.default)('systemjs-hmr:normalize')(parentName, '->', hotName);
   return hotName;
 };
 
@@ -98,11 +112,7 @@ System.__proto__.normalizeSync = function (moduleName, parentName, parentAddress
   if (moduleName == '@hot') return normalizeHot(parentName);else return _System.__proto__.normalizeSync.apply(System, [moduleName, parentName, parentAddress]);
 };
 
-/**
- * Return normalized names of all modules that import this module
- * @param moduleName
- * @returns {Array}
- */
+// Return normalized names of all modules that import this module
 var findDirectDependants = function findDirectDependants(moduleName) {
   return Object.keys(System.defined).filter(function (key) {
     return (System.defined[key].normalizedDeps || []).find(function (name) {
@@ -169,6 +179,10 @@ System.reload = function (moduleName) {
   var meta = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
+  var debug = (0, _debug2.default)('systemjs-hmr:reload');
+
+  debug('reloading', moduleName, 'with options', meta);
+
   // Validate params
   if ((typeof meta === 'undefined' ? 'undefined' : _typeof(meta)) != 'object') throw new Error("When calling System.reload(_, meta), meta should be an object");
 
@@ -184,18 +198,19 @@ System.reload = function (moduleName) {
   meta.preload = [];
 
   return reloader.lock = reloader.lock.then(function () {
+    debug('queued reload starting');
     return _System.normalize.apply(System, [moduleName]).then(function (name) {
       return findDependants(name);
     }).then(function (_ref) {
       var dependants = _ref.dependants,
           roots = _ref.roots;
 
+      debug('found dependents', dependants, 'with roots', roots);
       // Delete all dependent modules
-
-      // console.log('roots', roots)
 
       if (roots.length == 0 && meta.roots.length == 0) console.warn('systemjs-hmr: We couldn\'t detect any roots (entry points), this usually', 'means you have a circular dependency in your app code. This isn\'t a problem,', 'it just means that you need to specify {roots: [ ...roots ]} as the second argument', 'to System.reload. You can read more here: https://github.com/alexisvincent/systemjs-hmr#reload-api.', 'This is typically a library level concern, so if you are using a library that provides hot module replacement,', 'check how they handle entry points, or if they don\'t, open an issue with the library.');
 
+      debug('deleting dependents');
       return Promise.all(dependants.map(function (dependent) {
 
         // Get reference to module definition so that we can determine dependencies
@@ -210,8 +225,12 @@ System.reload = function (moduleName) {
          */
         if (dep.deps.find(function (name) {
           return name == '@hot';
-        })) System.set(getHotName(dependent), createHotModule(dependent));
+        })) {
+          debug(dependent, 'imports @hot');
+          System.set(getHotName(dependent), createHotModule(dependent));
+        }
 
+        debug('deleting', dependent);
         // Delete the module from the registry
         return System.delete(dependent);
       }))
@@ -223,9 +242,12 @@ System.reload = function (moduleName) {
       // })
 
       .then(function () {
+        debug('all dependents deleted, loading roots');
         // If roots have been specified in meta, load those, otherwise load our best guess
         return (meta.roots ? meta.roots : roots).map(System.normalizeSync).map(function (root) {
-          return System.load(root);
+          return System.import(root).catch(function (err) {
+            return console.error(err);
+          });
         });
         // .then(() => {
         //     reloader.loadCache.clear()

@@ -17,3 +17,5 @@ if (module) {
 export const __unload = () => console.log("lol")
 
 export const state = "two"
+
+console.log(module)

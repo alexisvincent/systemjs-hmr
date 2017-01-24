@@ -3,6 +3,7 @@
   "version": "0.1.7",
   "description": "Hot Module Replacement Extention for SystemJS",
   "main": "dist/index.js",
+  "registry": "npm",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel lib -d dist",
@@ -21,12 +22,11 @@
   },
   "homepage": "https://github.com/alexisvincent/systemjs-hmr#readme",
   "devDependencies": {
-    "babel-preset-env": "^1.1.8",
     "babel-cli": "^6.16.0",
     "babel-plugin-transform-object-rest-spread": "^6.16.0",
     "babel-plugin-transform-runtime": "^6.15.0",
-    "husky": "^0.11.9",
-    "jspm": "^0.16.48"
+    "babel-preset-env": "^1.1.8",
+    "husky": "^0.11.9"
   },
   "babel": {
     "presets": [
@@ -36,6 +36,7 @@
       "transform-object-rest-spread"
     ]
   },
+  "jspmPackage": true,
   "jspm": {
     "overrides": {
       "ajv": {
@@ -45,5 +46,8 @@
     "map": {
       "./next": "./dist/next.js"
     }
+  },
+  "dependencies": {
+    "debug": "^2.6.0"
   }
 }

@@ -2,6 +2,7 @@ node_modules
 jspm_packages
 .idea
 systemjs-hmr.iml
+.systemjs.cache.json
 
 npm-debug.log
 

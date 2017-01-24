@@ -8,8 +8,12 @@
 </head>
 <body>
 <script>
-    System.import('systemjs-hmr/dist/next')
-    System.import('app/app.js')
+  System.import('systemjs-hmr/next').then(s => {
+    System.import('systemjs-tools/client').then(({connect}) => {
+      connect()
+      System.import('app/app.js')
+    })
+  })
 </script>
 </body>
 </html>

@@ -10,3 +10,5 @@ console.log(b)
 console.log("a.js")
 
 export default "a.js exported string"
+
+

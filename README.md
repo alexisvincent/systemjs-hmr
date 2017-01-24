@@ -16,11 +16,11 @@ or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools)
 ## Roadmap
 - [x] construct functioning reload mechanism
 - [x] state hydration mechanisms
-- [ ] set SystemJS.trace = true automatically
-- [ ] disable HMR in production
+- [x] set SystemJS.trace = true automatically
+- [x] disable HMR in production
+- [x] [robustness (better error handling)](https://github.com/alexisvincent/systemjs-hmr/issues/11)
 - [ ] backwards compatibility for old `__unload` and `__reload` with deprecation
 - [ ] speed up `findDependents` via an internal cache
-- [ ] [robustness (better error handling)](https://github.com/alexisvincent/systemjs-hmr/issues/11)
 - [ ] [bundle](https://github.com/alexisvincent/systemjs-hmr/issues/10)
 - [ ] [preemptive file loading **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
 - [ ] [prevent reloading dependants **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
@@ -35,7 +35,6 @@ Install with your client-side package manager
 Then import systemjs-hmr **before** importing your app code.
 ```html
 <script>
-    System.trace = true
     System.import('systemjs-hmr/next').then(() => {
         System.import('app/app.js')
     })
@@ -45,7 +44,6 @@ Then import systemjs-hmr **before** importing your app code.
 or for the old (current systemjs-hot-reloader) behaviour
 ```html
 <script>
-    System.trace = true
     System.import('systemjs-hmr').then(() => {
         System.import('app/app.js')
     })
@@ -63,7 +61,7 @@ Where
 
 meta has the following (all optional) keys (but the API is still being built so you can expect this to change)
 
-`roots : [String]`
+`entries : [String]`
 An array of top level entry points into the application. If entry points aren't provided, systemjs-hmr will attempt to discover them
 automatically by determining which modules depend on `moduleName`, and are not imported by other modules. This only works when there are
 no circular dependencies involving roots.

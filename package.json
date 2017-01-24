@@ -44,7 +44,10 @@
       }
     },
     "map": {
-      "./next": "./dist/next.js"
+      "./next": {
+        "production": false,
+        "~production": "./dist/next.js"
+      }
     }
   },
   "dependencies": {

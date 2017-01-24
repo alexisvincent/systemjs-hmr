@@ -24,7 +24,7 @@ var d = function d() {
 };
 
 // We need trace == true for now
-if (!System.trace) console.warn('System.trace must be set to true via configuration before loading modules to hot-reload.');
+System.trace = true;
 
 // Augment System.import (catch errors and save imported modules)
 System.import = function () {

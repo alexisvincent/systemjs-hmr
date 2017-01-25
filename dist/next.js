@@ -117,7 +117,7 @@ if (!System._reloader) {
     // Return normalized names of all modules that import this module
     var findDirectDependants = function findDirectDependants(moduleName) {
       return Object.keys(System.defined).filter(function (key) {
-        return (System.defined[key].normalizedDeps || []).find(function (name) {
+        return (System.defined[key] && System.defined[key].normalizedDeps || []).find(function (name) {
           return name == moduleName;
         });
       });

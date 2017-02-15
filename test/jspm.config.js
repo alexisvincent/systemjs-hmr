@@ -1263,7 +1263,8 @@ SystemJS.config({
     "fs": "npm:jspm-nodelibs-fs@0.2.0",
     "path": "npm:jspm-nodelibs-path@0.2.1",
     "process": "npm:jspm-nodelibs-process@0.2.0",
-    "systemjs-tools": "npm:systemjs-tools@2.0.0-beta.11"
+    "systemjs-tools": "npm:systemjs-tools@2.0.0-beta.11",
+    "debug": "npm:debug@2.6.0"
   },
   packages: {
     "npm:systemjs-tools@2.0.0-beta.11": {

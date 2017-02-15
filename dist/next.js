@@ -16,15 +16,25 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+var log = (0, _debug2.default)('systemjs-hmr:log');
+
 // Make sure SystemJS has loaded
 if (!window.System && !!window.SystemJS) console.warn('The systemjs-hmr polyfill must be loading after SystemJS has loaded');
 
 // Bind and shadow the reference we will be using
 var System = window.SystemJS;
 
+var version = System.version.split(' ')[0].split('.')[1];
+
+var is19 = version == '19',
+    is20 = version == '20';
+
 if (!System._reloader) {
   (function () {
-    // Make sure System.trace is set (needed for System.defined to be fully populated)
+
+    if (!(is19 || is20)) console.warn('Only support for SystemJS 0.19 and 0.20 has been tested. You are using', System.version, '. If you are having success with this version, please let us know so we can add it to the list of known working versions');
+
+    // Make sure System.trace is set (needed for trace to be fully populated)
     System.trace = true;
 
     // Maintain a reference to all properties of the unpatched SystemJS object
@@ -36,17 +46,61 @@ if (!System._reloader) {
       }, System.__proto__)
     }, System);
 
+    // if (is20) {
+    //   System.has = (moduleName) => System.registry.has(moduleName)
+    // }
+    var trace = {
+      _: is20 ? System.loads : System.defined,
+      get: function get(moduleID) {
+        return trace._[moduleID];
+      },
+      keys: function keys() {
+        return Object.keys(trace._);
+      },
+      values: function values() {
+        return Object.values(trace._);
+      },
+      has: function has(moduleID) {
+        return !!trace.get(moduleID);
+      },
+
+      // return normalized names of all modules moduleId imports
+      getDependencies: function getDependencies(moduleId) {
+        var traceEntry = trace.get(moduleId);
+
+        if (is20) {
+          return Object.values(traceEntry.depMap);
+        } else if (is19 || true) {
+          return traceEntry.normalizedDeps || [];
+        }
+      },
+
+      // does moduleID import normalizedDep
+      hasDependency: function hasDependency(moduleID, normalizedDep) {
+        return trace.getDependencies(moduleID).find(function (name) {
+          return name == normalizedDep;
+        });
+      },
+
+      // return normalized names of all modules that import this moduleName
+      getDependents: function getDependents(moduleName) {
+        return trace.keys().filter(function (dep) {
+          return trace.hasDependency(dep, moduleName);
+        });
+      }
+    };
+
     // Stores state systemjs-hmr needs access to
-    var reloader = System._reloader = {
+    var _ = System._reloader = {
       // promise lock so that only one reload process can happen at a time
       lock: Promise.resolve(true),
 
       // **Experimental** Construct a per module persistent object
       _persistentRegistry: {},
       _getState: function _getState(name) {
-        if (!reloader._persistentRegistry[name]) reloader._persistentRegistry[name] = {};
+        if (!_._persistentRegistry[name]) _._persistentRegistry[name] = {};
 
-        return reloader._persistentRegistry[name];
+        return _._persistentRegistry[name];
       }
     };
 
@@ -63,13 +117,13 @@ if (!System._reloader) {
           // Get previous instance of module
           module: false,
           // **Experimental** Get persistent state object
-          _state: reloader._getState(moduleName)
+          _state: _._getState(moduleName)
         });
       } else {
         return System.newModule({
           module: System.get(moduleName),
           // **Experimental** Get persistent state object
-          _state: reloader._getState(moduleName)
+          _state: _._getState(moduleName)
         });
       }
     };
@@ -114,15 +168,6 @@ if (!System._reloader) {
       if (moduleName == '@hot') return normalizeHot(parentName);else return _System.__proto__.normalizeSync.apply(System, [moduleName, parentName, parentAddress]);
     };
 
-    // Return normalized names of all modules that import this module
-    var findDirectDependants = function findDirectDependants(moduleName) {
-      return Object.keys(System.defined).filter(function (key) {
-        return (System.defined[key] && System.defined[key].normalizedDeps || []).find(function (name) {
-          return name == moduleName;
-        });
-      });
-    };
-
     /**
      * Return normalized names of all modules that depend (directly or indirectly) on this module (including this module),
      * as well as the root dependencies
@@ -131,10 +176,13 @@ if (!System._reloader) {
      */
     var findDependants = function findDependants(moduleName) {
 
+      // console.log('trying to find dependents of ', moduleName)
+
       // A queue of modules to explore next, starting with moduleName
       var next = [];
 
-      if (System.defined[moduleName]) next.push(moduleName);
+      // If the module exists in the trace, use it as starting point for discovery
+      if (trace.has(moduleName)) next.push(moduleName);
 
       // A Set of all modules that depend on this one (includes moduleName)
       var dependents = new Set();
@@ -154,7 +202,9 @@ if (!System._reloader) {
           dependents.add(dep);
 
           // Get a list of the modules that import it
-          var directDependants = findDirectDependants(dep);
+          var directDependants = trace.getDependents(dep);
+
+          // console.log('direct dependents', directDependants)
 
           // Add those to the list of modules to explore
           next.push.apply(next, _toConsumableArray(directDependants));
@@ -173,23 +223,52 @@ if (!System._reloader) {
     };
 
     /**
+     * Backwards comparability for old __reload mechanism
+     * @param key
+     * @param parent
+     */
+    // System.import = function(key, parent) {
+    //   if (System.has(getHotName(key))) {
+    //
+    //   }
+    // }
+
+    /**
+     * Unload the module from the browser and delete from registry
+     * @param moduleName
+     */
+    System.unload = function (moduleName) {
+      debug('unloading', moduleName);
+      // Backwards comparability for old way of unloading
+      if (System.has(moduleName)) {
+        var module = System.get(moduleName);
+
+        if (typeof module.__unload == 'function') module.__unload();
+      }
+
+      System.delete(moduleName);
+    };
+
+    /**
      * System.reload
      * Discover all modules that depend on moduleName, delete them, then re-import the app entries.
-     *
      */
     System.reload = function (moduleName) {
-      var meta = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+
+      options = Object.assign({}, options);
 
       var debug = (0, _debug2.default)('systemjs-hmr:reload');
 
-      debug('reloading', moduleName, 'with options', meta);
+      debug('reloading', moduleName, 'with options', options);
+      log('reloading', moduleName);
 
       // Validate params
-      if ((typeof meta === 'undefined' ? 'undefined' : _typeof(meta)) != 'object') throw new Error("When calling System.reload(_, meta), meta should be an object");
+      if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) != 'object') throw new Error("When calling System.reload(_, meta), meta should be an object");
 
-      if (!Array.isArray(meta.entries)) {
-        if (meta.entries == undefined) meta.entries = false;else throw new Error("When calling System.reload(_, meta), meta.entries should me an array of normalized module names");
+      if (!Array.isArray(options.entries)) {
+        if (options.entries == undefined) options.entries = false;else throw new Error("When calling System.reload(_, meta), meta.entries should me an array of normalized module names");
       }
 
       /**
@@ -197,9 +276,9 @@ if (!System._reloader) {
        * For now this is mocked with an empty array.
        * @type {Array}
        */
-      meta.preload = [];
+      options.preload = [];
 
-      return reloader.lock = reloader.lock.then(function () {
+      return _.lock = _.lock.then(function () {
         debug('queued reload starting');
         return _System.normalize.apply(System, [moduleName]).then(function (name) {
           return findDependants(name);
@@ -210,31 +289,28 @@ if (!System._reloader) {
           debug('found dependents', dependants, 'with entries', entries);
           // Delete all dependent modules
 
-          if (entries.length == 0 && meta.entries.length == 0) console.warn('systemjs-hmr: We couldn\'t detect any entries (entry points), this usually', 'means you have a circular dependency in your app code. This isn\'t a problem,', 'it just means that you need to specify {entries: [ ...entries ]} as the second argument', 'to System.reload. You can read more here: https://github.com/alexisvincent/systemjs-hmr#reload-api.', 'This is typically a library level concern, so if you are using a library that provides hot module replacement,', 'check how they handle entry points, or if they don\'t, open an issue with the library.');
+          if (entries.length == 0 && options.entries.length == 0) console.warn('systemjs-hmr: We couldn\'t detect any entries (entry points), this usually', 'means you have a circular dependency in your app code. This isn\'t a problem,', 'it just means that you need to specify {entries: [ ...entries ]} as the second argument', 'to System.reload. You can read more here: https://github.com/alexisvincent/systemjs-hmr#reload-api.', 'This is typically a library level concern, so if you are using a library that provides hot module replacement,', 'check how they handle entry points, or if they don\'t, open an issue with the library.');
 
           debug('deleting dependents');
           return Promise.all(dependants.map(function (dependent) {
 
-            // Get reference to module definition so that we can determine dependencies
-            var dep = System.defined[dependent];
-
             /**
-             * If the module imports @hot, save a reference to it (to save space in the registry).
-             * The only time this is problematic is if someone adds an import to @hot. Then on the first reload,
-             * we won't have a reference to the old module. But on all subsequent reloads we will. Not an issue
-             * since the person will be in the process of adding reload support to a module and will be thinking
-             * about this case.
+             * Persist the old module instance if
+             * 1. It imports '@hot'
+             * 2. It exports a __reload function (backwards comparability)
+             *
+             * The only time this is problematic is if someone adds an import to @hot (or exports __reload).
+             * Then on the first reload, we won't have a reference to the old module. But on all subsequent
+             * reloads we will. Not an issue since the person will be in the process of adding reload support
+             * to a module and will be thinking about this case.
              */
-            if (dep.deps.find(function (name) {
-              return name == '@hot';
-            })) {
+            if (trace.hasDependency(dependent, '@hot') || typeof System.get(dependent).__reload == 'function') {
               debug(dependent, 'imports @hot');
               System.set(getHotName(dependent), createHotModule(dependent));
             }
 
-            debug('deleting', dependent);
-            // Delete the module from the registry
-            return System.delete(dependent);
+            // Unload the module from the browser and delete from registry
+            return System.unload(dependent);
           }))
           // .then(() => {
           //   return Promise.all(meta.preload.map(({
@@ -244,9 +320,10 @@ if (!System._reloader) {
           // })
 
           .then(function () {
-            debug('all dependents deleted, loading entries');
             // If entries have been specified in meta, load those, otherwise load our best guess
-            return (meta.entries ? meta.entries : entries).map(System.normalizeSync).map(function (entry) {
+            entries = options.entries || entries;
+            log('dependency tree purged, reimporting entries', entries);
+            return entries.map(System.normalizeSync).map(function (entry) {
               return System.import(entry).catch(function (err) {
                 return console.error(err);
               });

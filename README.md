@@ -19,12 +19,13 @@ or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools)
 - [x] set SystemJS.trace = true automatically
 - [x] disable HMR in production
 - [x] [robustness (better error handling)](https://github.com/alexisvincent/systemjs-hmr/issues/11)
-- [ ] backwards compatibility for old `__unload` and `__reload` with deprecation
+- [ ] backwards compatibility for old `__unload` and `__reload` with deprecation (__unload complete)
+- [ ] polyfill like experience instead of `SystemJS.import` instantiation
+- [ ] [SystemJS 0.20 support](https://github.com/alexisvincent/systemjs-hmr/issues/6)
 - [ ] speed up `findDependents` via an internal cache
-- [ ] [bundle](https://github.com/alexisvincent/systemjs-hmr/issues/10)
 - [ ] [preemptive file loading **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
+- [ ] [bundle](https://github.com/alexisvincent/systemjs-hmr/issues/10)
 - [ ] [prevent reloading dependants **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
-- [ ] [use trace API in SystemJS 0.20](https://github.com/alexisvincent/systemjs-hmr/issues/6)
 
 ## Usage
 Install with your client-side package manager

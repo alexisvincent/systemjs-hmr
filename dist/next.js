@@ -2,19 +2,17 @@
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
-                                                                                                                                                                                                                                                                   * Copyright 2016 Alexis Vincent (http://alexisvincent.io)
-                                                                                                                                                                                                                                                                   */
-// import ajv from 'ajv'
-
-
 var _debug = require('debug');
 
 var _debug2 = _interopRequireDefault(_debug);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } /**
+                                                                                                                                                                                                     * Copyright 2016 Alexis Vincent (http://alexisvincent.io)
+                                                                                                                                                                                                     */
+// import ajv from 'ajv'
+
 
 var log = (0, _debug2.default)('systemjs-hmr:log');
 
@@ -40,15 +38,23 @@ if (!System._reloader) {
     // Maintain a reference to all properties of the unpatched SystemJS object
     // Whenever using _System, bind in the System object. So for example
     // _System.normalize.apply(System, ["someModule"])
-    var _System = _extends({
-      __proto__: _extends({
-        __proto__: _extends({}, System.__proto__.__proto__)
-      }, System.__proto__)
-    }, System);
+    // const _System = {
+    //   __proto__: {
+    //     __proto__: {
+    //       ...System.__proto__.__proto__
+    //     },
+    //     ...System.__proto__,
+    //   },
+    //   ...System
+    // }
 
     // if (is20) {
     //   System.has = (moduleName) => System.registry.has(moduleName)
+    //   System.get = (moduleName) => System.registry.get(moduleName)
+    //   System.delete = (moduleName) => System.registry.delete(moduleName)
+    //   System.set = (moduleName) => System.registry.set(moduleName)
     // }
+
     var trace = {
       _: is20 ? System.loads : System.defined,
       get: function get(moduleID) {
@@ -77,7 +83,7 @@ if (!System._reloader) {
 
       // does moduleID import normalizedDep
       hasDependency: function hasDependency(moduleID, normalizedDep) {
-        return trace.getDependencies(moduleID).find(function (name) {
+        return trace.getDependencies(moduleID).some(function (name) {
           return name == normalizedDep;
         });
       },
@@ -94,6 +100,8 @@ if (!System._reloader) {
     var _ = System._reloader = {
       // promise lock so that only one reload process can happen at a time
       lock: Promise.resolve(true),
+
+      trace: trace,
 
       // **Experimental** Construct a per module persistent object
       _persistentRegistry: {},
@@ -113,7 +121,7 @@ if (!System._reloader) {
       (0, _debug2.default)('systemjs-hmr:createHotModule')(moduleName);
 
       if (!System.has(getHotName(moduleName))) {
-        return System.newModule({
+        return SystemJS.newModule({
           // Get previous instance of module
           module: false,
           // **Experimental** Get persistent state object
@@ -151,22 +159,27 @@ if (!System._reloader) {
      * @param parentAddress
      * @returns {*}
      */
-    System.__proto__.normalize = function (moduleName, parentName, parentAddress) {
-      // console.log('normalize', moduleName, parentName, parentAddress)
-      if (moduleName == '@hot') return Promise.resolve(normalizeHot(parentName));else return _System.__proto__.normalize.apply(System, [moduleName, parentName, parentAddress]);
-    };
+    if (is20) {
+      System.resolve = function (moduleName, parentName, parentAddress) {
+        if (moduleName == '@hot') return Promise.resolve(normalizeHot(parentName));else return System.__proto__.resolve.apply(System, [moduleName, parentName, parentAddress]);
+      }.bind(System);
 
-    /**
-     * Override standard normalize function to map calls to @hot to normalizedCallerModuleName!@@hot
-     * This needs to be idempotent
-     * @param moduleName
-     * @param parentName
-     * @param parentAddress
-     * @returns {*}
-     */
-    System.__proto__.normalizeSync = function (moduleName, parentName, parentAddress) {
-      if (moduleName == '@hot') return normalizeHot(parentName);else return _System.__proto__.normalizeSync.apply(System, [moduleName, parentName, parentAddress]);
-    };
+      // System.resolveSync = function (moduleName, parentName, parentAddress) {
+      //   if (moduleName == '@hot') return normalizeHot(parentName)
+      //   else return System.__proto__.resolveSync.apply(System, [moduleName, parentName, parentAddress])
+      // }
+    } else {
+      System.normalize = function (moduleName, parentName, parentAddress) {
+        if (moduleName == '@hot') return Promise.resolve(normalizeHot(parentName));else return System.__proto__.normalize.apply(System, [moduleName, parentName, parentAddress]);
+      }.bind(System);
+
+      // System.normalizeSync = function (moduleName, parentName, parentAddress) {
+      //   if (moduleName == '@hot') return normalizeHot(parentName)
+      //   else return System.__proto__.normalizeSync.apply(System, [moduleName, parentName, parentAddress])
+      // }
+    }
+
+    var resolve = is20 ? System.resolve : System.normalize;
 
     /**
      * Return normalized names of all modules that depend (directly or indirectly) on this module (including this module),
@@ -238,6 +251,7 @@ if (!System._reloader) {
      * @param moduleName
      */
     System.unload = function (moduleName) {
+      var debug = (0, _debug2.default)('systemjs-hmr:reload');
       debug('unloading', moduleName);
       // Backwards comparability for old way of unloading
       if (System.has(moduleName)) {
@@ -280,7 +294,7 @@ if (!System._reloader) {
 
       return _.lock = _.lock.then(function () {
         debug('queued reload starting');
-        return _System.normalize.apply(System, [moduleName]).then(function (name) {
+        return resolve(moduleName).then(function (name) {
           return findDependants(name);
         }).then(function (_ref) {
           var dependants = _ref.dependants,
@@ -304,13 +318,15 @@ if (!System._reloader) {
              * reloads we will. Not an issue since the person will be in the process of adding reload support
              * to a module and will be thinking about this case.
              */
-            if (trace.hasDependency(dependent, '@hot') || typeof System.get(dependent).__reload == 'function') {
-              debug(dependent, 'imports @hot');
-              System.set(getHotName(dependent), createHotModule(dependent));
-            }
+            return resolve(dependent).then(function (dependent) {
+              if (trace.hasDependency(dependent, normalizeHot(dependent)) || typeof System.get(dependent).__reload == 'function') {
+                debug(dependent, 'imports @hot');
+                System.set(getHotName(dependent), createHotModule(dependent));
+              }
 
-            // Unload the module from the browser and delete from registry
-            return System.unload(dependent);
+              // Unload the module from the browser and delete from registry
+              return System.unload(dependent);
+            });
           }))
           // .then(() => {
           //   return Promise.all(meta.preload.map(({
@@ -323,14 +339,19 @@ if (!System._reloader) {
             // If entries have been specified in meta, load those, otherwise load our best guess
             entries = options.entries || entries;
             log('dependency tree purged, reimporting entries', entries);
-            return entries.map(System.normalizeSync).map(function (entry) {
-              return System.import(entry).catch(function (err) {
-                return console.error(err);
+            return Promise.all(entries.map(resolve)).then(function (entries) {
+              return entries.map(function (entry) {
+                return System.import(entry).catch(function (err) {
+                  return console.error(err);
+                });
               });
-            });
+            }
             // .then(() => {
             //     reloader.loadCache.clear()
             // })
+            ).catch(function (e) {
+              return console.error(e);
+            });
           });
         });
       }).catch(function (err) {

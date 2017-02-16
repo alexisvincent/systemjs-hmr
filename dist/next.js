@@ -35,26 +35,6 @@ if (!System._reloader) {
     // Make sure System.trace is set (needed for trace to be fully populated)
     System.trace = true;
 
-    // Maintain a reference to all properties of the unpatched SystemJS object
-    // Whenever using _System, bind in the System object. So for example
-    // _System.normalize.apply(System, ["someModule"])
-    // const _System = {
-    //   __proto__: {
-    //     __proto__: {
-    //       ...System.__proto__.__proto__
-    //     },
-    //     ...System.__proto__,
-    //   },
-    //   ...System
-    // }
-
-    // if (is20) {
-    //   System.has = (moduleName) => System.registry.has(moduleName)
-    //   System.get = (moduleName) => System.registry.get(moduleName)
-    //   System.delete = (moduleName) => System.registry.delete(moduleName)
-    //   System.set = (moduleName) => System.registry.set(moduleName)
-    // }
-
     var trace = {
       _: is20 ? System.loads : System.defined,
       get: function get(moduleID) {
@@ -163,20 +143,10 @@ if (!System._reloader) {
       System.resolve = function (moduleName, parentName, parentAddress) {
         if (moduleName == '@hot') return Promise.resolve(normalizeHot(parentName));else return System.__proto__.resolve.apply(System, [moduleName, parentName, parentAddress]);
       }.bind(System);
-
-      // System.resolveSync = function (moduleName, parentName, parentAddress) {
-      //   if (moduleName == '@hot') return normalizeHot(parentName)
-      //   else return System.__proto__.resolveSync.apply(System, [moduleName, parentName, parentAddress])
-      // }
     } else {
       System.normalize = function (moduleName, parentName, parentAddress) {
         if (moduleName == '@hot') return Promise.resolve(normalizeHot(parentName));else return System.__proto__.normalize.apply(System, [moduleName, parentName, parentAddress]);
       }.bind(System);
-
-      // System.normalizeSync = function (moduleName, parentName, parentAddress) {
-      //   if (moduleName == '@hot') return normalizeHot(parentName)
-      //   else return System.__proto__.normalizeSync.apply(System, [moduleName, parentName, parentAddress])
-      // }
     }
 
     var resolve = is20 ? System.resolve : System.normalize;
@@ -188,8 +158,6 @@ if (!System._reloader) {
      * @returns {{dependants: Array, entries: Array}}
      */
     var findDependants = function findDependants(moduleName) {
-
-      // console.log('trying to find dependents of ', moduleName)
 
       // A queue of modules to explore next, starting with moduleName
       var next = [];
@@ -234,17 +202,6 @@ if (!System._reloader) {
         entries: Array.from(entries)
       };
     };
-
-    /**
-     * Backwards comparability for old __reload mechanism
-     * @param key
-     * @param parent
-     */
-    // System.import = function(key, parent) {
-    //   if (System.has(getHotName(key))) {
-    //
-    //   }
-    // }
 
     /**
      * Unload the module from the browser and delete from registry
@@ -345,11 +302,7 @@ if (!System._reloader) {
                   return console.error(err);
                 });
               });
-            }
-            // .then(() => {
-            //     reloader.loadCache.clear()
-            // })
-            ).catch(function (e) {
+            }).catch(function (e) {
               return console.error(e);
             });
           });

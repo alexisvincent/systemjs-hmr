@@ -1,10 +1,10 @@
 {
   "name": "systemjs-hmr",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Hot Module Replacement Extention for SystemJS",
   "main": "dist/systemjs-hmr.js",
   "registry": "npm",
-  "format":"global",
+  "format": "global",
   "scripts": {
     "build": "./node_modules/.bin/rollup -c",
     "dev": "./node_modules/.bin/rollup -c --watch",

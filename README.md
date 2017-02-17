@@ -37,7 +37,7 @@ Install with your client-side package manager
 - `yarn add systemjs-hmr`
 - `npm install systemjs-hmr`
 
-`systemjs-hmr` will automaticallt set SystemJS.trace = true, so you no longer
+`systemjs-hmr` will automatically set SystemJS.trace = true, so you no longer
 need to set this manually, as with previous versions.
 
 `systemjs-hmr` **MUST** load before your application code otherwise SystemJS

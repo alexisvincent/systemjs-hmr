@@ -16,7 +16,7 @@
     "url": "git+https://github.com/alexisvincent/systemjs-hmr.git"
   },
   "author": "Alexis Vincent",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/alexisvincent/systemjs-hmr/issues"
   },

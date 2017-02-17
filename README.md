@@ -1,5 +1,6 @@
 # SystemJS HMR
 [![npm version](https://badge.fury.io/js/systemjs-hmr.svg)](https://badge.fury.io/js/systemjs-hmr)
+[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
 
 SystemJS-HMR provides hot module replacement primitives for SystemJS via a ```System.reload``` function and proposes a new `unload` loader plugin hook.
 

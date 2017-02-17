@@ -638,6 +638,8 @@ if (!System._reloader) {
   // Make sure System.trace is set (needed for trace to be fully populated)
   System.trace = true;
 
+  System.loads = System.loads || {};
+
   var trace = {
     _: is20 ? System.loads : System.defined,
     get: function get$$1(moduleID) {

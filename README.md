@@ -5,13 +5,13 @@ SystemJS-HMR provides hot module replacement primitives for SystemJS via a ```Sy
 The goal of this project is to implement HMR primitives for SystemJS that can be battle tested and later added to the core project.
 ***SystemJS HMR*** is meant to be used as an HMR enabler for library creators rather then providing a full HMR experience
 for application developers, if you're looking to implement HMR in your own project take a look at
-[capaj/systemjs-hot-reloader](https://github.com/capaj/systemjs-hot-reloader) or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools)
+[alexisvincent/systemjs-hot-reloader](https://github.com/alexisvincent/systemjs-hot-reloader) or [alexisvincent/systemjs-tools](https://github.com/alexisvincent/systemjs-tools)
 both of which now use this project under the hood.
 
 We want to introduce a minimal API change to SystemJS and build in such a fashion as to enable smooth assimilation into core further down the line.
 This project will only implement the logic required to enable HMR,
-and as such things akin to the eventing api found in [capaj/systemjs-hot-reloader](https://github.com/capaj/systemjs-hot-reloader) 
-or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools) are left to the library/application developer.
+and as such things akin to the eventing api found in [systemjs-hot-reloader](https://github.com/alexisvincent/systemjs-hot-reloader)
+or [systemjs-tools](https://github.com/alexisvincent/systemjs-tools) are left to the library/application developer.
 
 ## Roadmap
 - [x] construct functioning reload mechanism
@@ -20,12 +20,12 @@ or [alexisvincent/jspm-devtools](https://github.com/alexisvincent/jspm-devtools)
 - [x] disable HMR in production
 - [x] [robustness (better error handling)](https://github.com/alexisvincent/systemjs-hmr/issues/11)
 - [x] backwards compatibility for old `__unload`
-- [ ] [SystemJS 0.20 support](https://github.com/alexisvincent/systemjs-hmr/issues/6)
-- [ ] polyfill like experience instead of `SystemJS.import` instantiation
+- [x] [SystemJS 0.20 support](https://github.com/alexisvincent/systemjs-hmr/issues/6)
+- [x] polyfill like experience instead of `SystemJS.import` instantiation
+- [x] [bundle](https://github.com/alexisvincent/systemjs-hmr/issues/10)
 - [ ] backwards compatibility for old `__reload` with deprecation
 - [ ] speed up `findDependents` via an internal cache
 - [ ] [preemptive file loading **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
-- [ ] [bundle](https://github.com/alexisvincent/systemjs-hmr/issues/10)
 - [ ] [prevent reloading dependants **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
 
 ## Usage
@@ -34,16 +34,14 @@ Install with your client-side package manager
 - `yarn add systemjs-hmr`
 - `npm install systemjs-hmr`
 
-Then import systemjs-hmr **before** importing your app code.
+`systemjs-hmr` **MUST** load before your application code otherwise SystemJS
+won't know how to resolve your `@hot` imports. So either add a script tag
+to your header after loading SystemJS.
 ```html
-<script>
-    System.import('systemjs-hmr/next').then(() => {
-        System.import('app/app.js')
-    })
-</script>
+<script src="jspm_packages/npm/systemjs-hmr@version/dist/systemjs-hmr.js"></script>
 ```
 
-or for the old (current systemjs-hot-reloader) behaviour
+or import systemjs-hmr **before** importing your app code.
 ```html
 <script>
     System.import('systemjs-hmr').then(() => {
@@ -52,16 +50,15 @@ or for the old (current systemjs-hot-reloader) behaviour
 </script>
 ```
 
-
 ### Reload API
 ```js
-SystemJS.reload(moduleName, meta)
+SystemJS.reload(moduleName, options)
 ```
 Where
 - `moduleName` is a String of the same kind you would provide to ```System.load``` or ```System.import``` when importing a module.
-- `meta` is an optional object containing information to help speedup the reload process (module sources, dependency trees, etc.)
+- `options` is an optional object containing information to help speedup the reload process (module sources, dependency trees, etc.)
 
-meta has the following (all optional) keys (but the API is still being built so you can expect this to change)
+options has the following (all optional) keys (but the API is still being built so you can expect this to change)
 
 `entries : [String]`
 An array of top level entry points into the application. If entry points aren't provided, systemjs-hmr will attempt to discover them

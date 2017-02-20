@@ -26,8 +26,9 @@ or [systemjs-tools](https://github.com/alexisvincent/systemjs-tools) are left to
 - [x] [SystemJS 0.20 support](https://github.com/alexisvincent/systemjs-hmr/issues/6)
 - [x] polyfill like experience instead of `SystemJS.import` instantiation
 - [x] [bundle](https://github.com/alexisvincent/systemjs-hmr/issues/10)
-- [ ] backwards compatibility for old `__reload` with deprecation
-- [ ] speed up `findDependents` via an internal cache
+- [x] backwards compatibility for old `__reload` with deprecation
+- [x] handle circular dependencies in entry points
+- [ ] speed up `findDependents` via an internal cache and graph representation
 - [ ] [preemptive file loading **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
 - [ ] [prevent reloading dependants **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
 
@@ -69,9 +70,8 @@ Where
 options has the following (all optional) keys (but the API is still being built so you can expect this to change)
 
 `entries : [String]`
-An array of top level entry points into the application. If entry points aren't provided, systemjs-hmr will attempt to discover them
-automatically by determining which modules depend on `moduleName`, and are not imported by other modules. This only works when there are
-no circular dependencies involving roots.
+An array of top level entry points into the application. If entry points aren't provided, systemjs-hmr will discover them
+automatically (slower).
 
 `others` Other options will be exposed to speedup the reload process. For example, pre-calculated dependency trees, pre-fetched module sources, etc.
 

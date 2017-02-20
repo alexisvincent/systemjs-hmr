@@ -11060,8 +11060,6 @@ if (!System._reloader) {
    */
   var findDependants = function findDependants(moduleName, entries) {
 
-    console.log('fd', moduleName, trace.has(moduleName));
-
     // A queue of modules to explore next, starting with moduleName
     var next = [];
 
@@ -11219,7 +11217,7 @@ if (!System._reloader) {
             }
           });
 
-          if (usedReload) console.warn('Exporting __reload to reload your module is deprecated, you need to follow the steps', 'here to upgrade');
+          if (usedReload) if (System.warnings) console.warn('Exporting __reload to reload your module is deprecated, upgrade docs here:', 'https://github.com/alexisvincent/systemjs-hmr');
         });
       });
     }).catch(function (err) {

@@ -10935,6 +10935,9 @@ if (!System._reloader) {
 
     trace: trace,
 
+    entryCache: [],
+    lastImportFailed: false,
+
     // **Experimental** Construct a per module persistent object
     _persistentRegistry: {},
     _getState: function _getState(name) {
@@ -11144,7 +11147,7 @@ if (!System._reloader) {
     return _.lock = _.lock.then(function () {
       debug('queued reload starting');
       return resolve(moduleName).then(function (name) {
-        return findDependants(name, options.entries);
+        return findDependants(name, _.lastImportFailed ? _.entryCache : options.entries);
       }).then(function (_ref) {
         var dependants = _ref.dependants,
             entries = _ref.entries;
@@ -11170,7 +11173,7 @@ if (!System._reloader) {
           return resolve(dependent).then(function (dependent) {
             if (trace.hasDependency(dependent, normalizeHot(dependent)) || typeof System.get(dependent).__reload == 'function') {
               debug(dependent, 'imports @hot');
-              System.set(getHotName(dependent), createHotModule(dependent));
+              if (!(System.has(getHotName(dependent)) && !System.has(dependent))) System.set(getHotName(dependent), createHotModule(dependent));
             }
 
             // Unload the module from the browser and delete from registry
@@ -11186,13 +11189,15 @@ if (!System._reloader) {
 
         .then(function () {
           log$$1('dependency tree purged, reimporting entries', entries);
+          _.lastImportFailed = false;
           return bluebird.resolve(entries)
           // resolve all entries
           .map(resolve)
           // import all entries, complain if there was an error, but continue anyway
           .map(function (entry) {
             return System.import(entry).catch(function (err) {
-              return console.error(err);
+              _.lastImportFailed = true;
+              console.error(err);
             });
           })
           // Print any errors

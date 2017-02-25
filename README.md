@@ -17,21 +17,6 @@ This project will only implement the logic required to enable HMR,
 and as such things akin to the eventing api found in [systemjs-hot-reloader](https://github.com/alexisvincent/systemjs-hot-reloader)
 or [systemjs-tools](https://github.com/alexisvincent/systemjs-tools) are left to the library/application developer.
 
-## Roadmap
-- [x] construct functioning reload mechanism
-- [x] state hydration mechanisms
-- [x] set SystemJS.trace = true automatically
-- [x] disable HMR in production
-- [x] [robustness (better error handling)](https://github.com/alexisvincent/systemjs-hmr/issues/11)
-- [x] backwards compatibility for old `__unload`
-- [x] [SystemJS 0.20 support](https://github.com/alexisvincent/systemjs-hmr/issues/6)
-- [x] polyfill like experience instead of `SystemJS.import` instantiation
-- [x] [bundle](https://github.com/alexisvincent/systemjs-hmr/issues/10)
-- [x] backwards compatibility for old `__reload` with deprecation
-- [x] handle circular dependencies in entry points
-- [ ] speed up `findDependents` via an internal cache and graph representation
-- [ ] [preemptive file loading **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
-- [ ] [prevent reloading dependants **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
 
 ## Usage
 Install with your client-side package manager
@@ -82,7 +67,7 @@ export const __unload = () => {
 When hot module replacement is added to an application there are a few modifications we may need to
 make to our code base, since the assumption that your code will run exactly once has been broken.
 
-There are three primary considerations you will need to make.
+There are three primary questions you may ask are
   1. How do I safely unload a module, in preparation for a new one?
   2. How do I know if this is the first load, or a `hot` load?
   3. If this is a `hot` load, how do I initialise the new module with state from the old one?
@@ -147,4 +132,18 @@ by `SystemJS.unload` during the HMR process.
 
 This ends up cleanly catering for the general case where a module is deleted (via `SystemJS.unload`) as well as the reload situation.
 
-## That's all folks
+## Roadmap
+- [x] construct functioning reload mechanism
+- [x] state hydration mechanisms
+- [x] set SystemJS.trace = true automatically
+- [x] disable HMR in production
+- [x] [robustness (better error handling)](https://github.com/alexisvincent/systemjs-hmr/issues/11)
+- [x] backwards compatibility for old `__unload`
+- [x] [SystemJS 0.20 support](https://github.com/alexisvincent/systemjs-hmr/issues/6)
+- [x] polyfill like experience instead of `SystemJS.import` instantiation
+- [x] [bundle](https://github.com/alexisvincent/systemjs-hmr/issues/10)
+- [x] backwards compatibility for old `__reload` with deprecation
+- [x] handle circular dependencies in entry points
+- [ ] speed up `findDependents` via an internal cache and graph representation
+- [ ] [preemptive file loading **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)
+- [ ] [prevent reloading dependants **- optimization**](https://github.com/alexisvincent/systemjs-hmr/issues/12)

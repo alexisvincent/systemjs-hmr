@@ -60,8 +60,8 @@ as well as export a `__unload` function.
 
 ```javascript
 /**
- * On first load module will be false, and on all subsequent loads, 
- * module will be the previous instance of the file/module.
+ * You can import the previous instance of your module as you would any other module.
+ * On first load, module == false.
  */
 import { module } from '@hot'
 

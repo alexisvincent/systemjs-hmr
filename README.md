@@ -61,7 +61,7 @@ your jspm config file.
 `systemjs-hmr` will automatically set `SystemJS.trace = true`, so you no longer
 need to set this manually, as with previous versions.
 
-### State Hydration and Safe Unloads
+### State Hydration and Safe Module Unloads
 ##### (see [#2](https://github.com/alexisvincent/systemjs-hmr/issues/2) for discussion / proposals)
 
 When hot module replacement is added to an application there are a few modifications we may need to
@@ -99,6 +99,8 @@ export const _state = module ? module._state : {}
  */
 export const __unload = () => {
     console.log('Unload something (unsubscribe from listeners, disconnect from socket, etc...)')
+    // force unload React components
+    ReactDOM.unmountComponentAtNode(DOMNode);	// your container node
 }
 ```
 

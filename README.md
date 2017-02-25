@@ -2,23 +2,22 @@
 [![npm version](https://badge.fury.io/js/systemjs-hmr.svg)](https://badge.fury.io/js/systemjs-hmr)
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
  
-SystemJS-HMR provides hot module replacement primitives for SystemJS via a ```System.reload``` function and extends 
-SystemJS with an `System.unload` function to cleanly unload modules (js, css, scss etc) from the browser.
+`systemjs-hmr` provides hot module replacement primitives for [SystemJS](https://github.com/systemjs/systemjs) via a ```System.reload``` function and extends 
+[SystemJS](https://github.com/systemjs/systemjs)  with an `System.unload` function to cleanly unload modules (js, css, scss etc) from the browser.
 
 ### Please note, this library will not give you hot reloading out of the box, if thats what you are looking for, checkout [systemjs-hot-reloader](https://github.com/alexisvincent/systemjs-hot-reloader) or [systemjs-tools](https://github.com/alexisvincent/systemjs-tools)
 
 ## Goal
-The goal of this project is to implement HMR primitives for SystemJS that can be battle tested and later added to the core project.
+The goal of this project is to implement HMR primitives for [SystemJS](https://github.com/systemjs/systemjs) that can be battle tested and later added to the core project.
 ***SystemJS HMR*** is meant to be used as an HMR enabler for library creators rather then providing a full HMR experience
 for application developers, if you're looking to implement HMR in your own project take a look at
 [systemjs-hot-reloader](https://github.com/alexisvincent/systemjs-hot-reloader) or [systemjs-tools](https://github.com/alexisvincent/systemjs-tools)
 both of which use this project under the hood.
 
-We want to introduce a minimal API change to SystemJS and build in such a fashion as to enable smooth assimilation into core further down the line.
+We want to introduce a minimal API change to [SystemJS](https://github.com/systemjs/systemjs) and build in such a fashion as to enable smooth assimilation into core further down the line.
 This project will only implement the logic required to enable HMR,
 and as such things akin to the eventing api found in [systemjs-hot-reloader](https://github.com/alexisvincent/systemjs-hot-reloader)
 or [systemjs-tools](https://github.com/alexisvincent/systemjs-tools) are left to the library/application developer.
-
 
 ## Usage
 Install with your client-side package manager
@@ -48,7 +47,7 @@ or import systemjs-hmr **before** importing your app code.
 need to set this manually, as with previous versions.
 
 ### State Hydration and Safe Unloads
-#### (see [#2](https://github.com/alexisvincent/systemjs-hmr/issues/2) for discussion / proposals)
+##### (see [#2](https://github.com/alexisvincent/systemjs-hmr/issues/2) for discussion / proposals)
 
 ```javascript
 import { module } from '@hot'

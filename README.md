@@ -2,10 +2,10 @@
 [![npm version](https://badge.fury.io/js/systemjs-hmr.svg)](https://badge.fury.io/js/systemjs-hmr)
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
  
-### Please note, this library will not give you hot reloading out of the box, if thats what you are looking for, checkout [systemjs-hot-reloader](https://github.com/alexisvincent/systemjs-hot-reloader) or [systemjs-tools](https://github.com/alexisvincent/systemjs-tools)
-
 SystemJS-HMR provides hot module replacement primitives for SystemJS via a ```System.reload``` function and extends 
 SystemJS with an `System.unload` function to cleanly unload modules (js, css, scss etc) from the browser.
+
+### Please note, this library will not give you hot reloading out of the box, if thats what you are looking for, checkout [systemjs-hot-reloader](https://github.com/alexisvincent/systemjs-hot-reloader) or [systemjs-tools](https://github.com/alexisvincent/systemjs-tools)
 
 ## Goal
 The goal of this project is to implement HMR primitives for SystemJS that can be battle tested and later added to the core project.

@@ -44,6 +44,22 @@ or import systemjs-hmr **before** importing your app code.
 </script>
 ```
 
+Until SystemJS does automatically, you need to tell SystemJS how to handle
+the `@hot` imports when building your app. To do this, add the following to
+your jspm config file.
+
+```js
+{
+  ...
+  "packages": {
+    ...
+    "@hot": {
+      "build": false
+    }
+  }
+}
+```
+
 `systemjs-hmr` will automatically set `SystemJS.trace = true`, so you no longer
 need to set this manually, as with previous versions.
 

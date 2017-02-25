@@ -11216,7 +11216,7 @@ if (!System._reloader) {
             }
           });
 
-          if (usedReload) if (System.warnings) console.warn('Exporting __reload to reload your module is deprecated, upgrade docs here:', 'https://github.com/alexisvincent/systemjs-hmr');
+          if (usedReload && System.warnings) console.warn('Exporting __reload to reload your module is deprecated, upgrade docs here:', 'https://github.com/alexisvincent/systemjs-hmr');
         });
       });
     }).catch(function (err) {

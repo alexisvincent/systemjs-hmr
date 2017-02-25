@@ -61,8 +61,7 @@
     },
     "map": {
       "./dist/systemjs-hmr.js": {
-        "production": false,
-        "~production": "./dist/systemjs-hmr.js"
+        "production": false
       }
     }
   }

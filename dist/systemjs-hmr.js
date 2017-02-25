@@ -10906,11 +10906,7 @@ if (!System._reloader) {
     getDependencies: function getDependencies(moduleId) {
       var traceEntry = trace.get(moduleId);
 
-      if (is20) {
-        return Object.values(traceEntry.depMap);
-      } else if (is19 || true) {
-        return traceEntry.normalizedDeps || [];
-      }
+      if (!traceEntry) return [];else if (is20) return Object.values(traceEntry.depMap);else if (is19 || true) return traceEntry.normalizedDeps || [];
     },
 
     // does moduleID import normalizedDep

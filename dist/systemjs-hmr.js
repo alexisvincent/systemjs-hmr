@@ -11026,12 +11026,11 @@ if (!System._reloader) {
       entries = entries.add(node);
 
       var removeDepsOf = function removeDepsOf(dep) {
+        modulesToExplore = modulesToExplore.remove(dep);
+
         if (trace.has(dep)) trace.getDependencies(dep).forEach(function (depToRemove) {
-          if (entries.has(depToRemove)) {
-            entries = entries.remove(depToRemove);
-          } else {
-            modulesToExplore = modulesToExplore.remove(depToRemove);
-            removeDepsOf(depToRemove);
+          if (modulesToExplore.has(depToRemove)) {
+            if (entries.has(depToRemove)) entries = entries.remove(depToRemove);else removeDepsOf(depToRemove);
           }
         });
       };

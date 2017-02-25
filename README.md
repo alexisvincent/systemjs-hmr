@@ -50,51 +50,42 @@ need to set this manually, as with previous versions.
 ### State Hydration and Safe Unloads
 ##### (see [#2](https://github.com/alexisvincent/systemjs-hmr/issues/2) for discussion / proposals)
 
+When hot module replacement is added to an application there are a few modifications we may need to
+make to our code base, since the assumption that your code will run exactly once has been broken.
+
+When a new version of a module is imported it might very well want to reinitialize it's own state based 
+on the state of the previous module instance, to deal with this case and to cleanly unload your module
+from the registry you can import the previous instance of your module as you would any other module.
+
 ```javascript
+/**
+ * On first load module will be false, and on all subsequent loads, 
+ * module will be the previous instance of the file/module.
+ */
 import { module } from '@hot'
 
 /** 
-* Here we set and export the state of the file. If 'module == false' (first load),
-* then initialise the state to {}, otherwise set the state to the previously exported
-* state.
-*/
+ * Since all exports of the previous instance are available, you can simply export any state you might want to persist.
+ *
+ * Here we set and export the state of the file. If 'module == false' (first load),
+ * then initialise the state to {}, otherwise set the state to the previously exported
+ * state.
+ */
 export const _state = module ? module._state : {}
 
-
+/**
+ * If you're module needs to run some 'cleanup' code before being unloaded from the system, it can do so,
+ * by exporting an `__unload` function that will be run just before the module is deleted from the registry.
+ *
+ * Here you would unsubscribe from listeners, or any other task that might cause issues in your application,
+ * or prevent the module from being garbage collected.
+ *
+ * See SystemJS.unload API for more information.
+ */
 export const __unload = () => {
     console.log('Unload something (unsubscribe from listeners, disconnect from socket, etc...)')
 }
 ```
-
-When hot module replacement is added to an application there are a few modifications we may need to
-make to our code base, since the assumption that your code will run exactly once has been broken.
-
-There are three primary questions you may ask are
-  1. How do I safely unload a module, in preparation for a new one?
-  2. How do I know if this is the first load, or a `hot` load?
-  3. If this is a `hot` load, how do I initialise the new module with state from the old one?
-
-##### How do I safely unload a module, in preparation for a new one?
-If you're module needs to run some *'cleanup'* code before being unloaded from the system, it can do so,
-by exporting an `__unload` function that will be run just before the module is deleted from the registry.
-
-Here you would unsubscribe from listeners, or any other task that might cause issues in your application,
-or prevent the module from being garbage collected.
-
-See SystemJS.unload API for more information.
-
-##### How do I know if this is the first load, or a `hot` load?
-You can `import { module } from '@hot'`, on first load `module === false`
-
-##### If this is a `hot` load, how do I initialise the new module with state from the old one?
-When a new version of a module is imported it might very well want to reinitialize it's own state based 
-on the state of the previous module instance.
-
-To deal with this case you can `import { module } from '@hot'`. On first load module will be false, and on
-all subsequent loads, module will be the previous instance of the file/module.
-
-Since all exports of the previous instance are available, you can simply export any state you might want to persist.
-Or call any functions you might want.
 
 ## API
 

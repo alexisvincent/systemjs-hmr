@@ -63,13 +63,29 @@ or import systemjs-hmr **before** importing your app code.
 ### State Hydration and Safe Unloads
 #### (see [#2](https://github.com/alexisvincent/systemjs-hmr/issues/2) for discussion / proposals)
 
+```javascript
+import { module } from '@hot'
+
+/** 
+* Here we set and export the state of the file. If 'module == false' (first load),
+* then initialise the state to {}, otherwise set the state to the previously exported
+* state.
+*/
+export const _state = module ? module._state : {}
+
+
+export const __unload = () => {
+    console.log('Unload something (unsubscribe from listeners, disconnect from socket, etc...)')
+}
+```
+
 When hot module replacement is added to an application there are a few modifications we may need to
 make to our code base, since the assumption that your code will run exactly once has been broken.
 
 There are three primary considerations you will need to make.
-1. How do I safely unload a module, in preparation for a new one?
-2. How do I know if this is the first load, or a `hot` load?
-3. If this is a `hot` load, how do I initialise the new module with state from the old one?
+  1. How do I safely unload a module, in preparation for a new one?
+  2. How do I know if this is the first load, or a `hot` load?
+  3. If this is a `hot` load, how do I initialise the new module with state from the old one?
 
 ##### How do I safely unload a module, in preparation for a new one?
 If you're module needs to run some *'cleanup'* code before being unloaded from the system, it can do so,
@@ -93,26 +109,9 @@ all subsequent loads, module will be the previous instance of the file/module.
 Since all exports of the previous instance are available, you can simply export any state you might want to persist.
 Or call any functions you might want.
 
-#### Example
-
-```javascript
-import { module } from '@hot'
-
-/** 
-* Here we set and export the state of the file. If 'module == false' (first load),
-* then initialise the state to {}, otherwise set the state to the previously exported
-* state.
-*/
-export const _state = module ? module._state : {}
-
-
-export const __unload = () => {
-    console.log('Unload something (unsubscribe from listeners, disconnect from socket, etc...)')
-}
-```
-
 ## API
-> # SystemJS.**reload**(moduleName, [options])
+
+### SystemJS.**reload**(moduleName, [options])
 
 Where
 - `moduleName` is a String of the same kind you would provide to ```System.load``` or ```System.import``` when importing a module.

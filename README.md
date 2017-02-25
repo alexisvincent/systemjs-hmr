@@ -55,7 +55,8 @@ make to our code base, since the assumption that your code will run exactly once
 
 When a new version of a module is imported it might very well want to reinitialize it's own state based 
 on the state of the previous module instance, to deal with this case and to cleanly unload your module
-from the registry you can import the previous instance of your module as you would any other module.
+from the registry you can import the previous instance of your module as you would any other module,
+as well as export a `__unload` function.
 
 ```javascript
 /**

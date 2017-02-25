@@ -60,29 +60,6 @@ or import systemjs-hmr **before** importing your app code.
 </script>
 ```
 
-### API
-#### SystemJS.**reload**(moduleName, [options])
-
-Where
-- `moduleName` is a String of the same kind you would provide to ```System.load``` or ```System.import``` when importing a module.
-- `options` is an optional object containing information to help speedup the reload process (module sources, dependency trees, etc.)
-
-options has the following (all optional) keys (but the API is still being built so you can expect this to change)
-
-`entries : [String]`
-An array of top level entry points into the application. If entry points aren't provided, systemjs-hmr will discover them
-automatically (slower).
-
-`others` Other options will be exposed to speedup the reload process. For example, pre-calculated dependency trees, pre-fetched module sources, etc.
-
-#### SystemJS.**unload**(moduleName)
-A drop in replacement for `SystemJS.delete(moduleName)`.
-
-Checks if the module exports an `__unload` function, i.e. if `typeof SystemJS.get(moduleName).__unload === 'function'`,
-if so, this function is executed.
-
-Finally, `SystemJS.delete(moduleName)` is executed. 
-
 ### State Hydration and Safe Unloads
 #### (see [#2](https://github.com/alexisvincent/systemjs-hmr/issues/2) for discussion / proposals)
 
@@ -133,6 +110,30 @@ export const __unload = () => {
     console.log('Unload something (unsubscribe from listeners, disconnect from socket, etc...)')
 }
 ```
+
+## API
+> # SystemJS.**reload**(moduleName, [options])
+
+Where
+- `moduleName` is a String of the same kind you would provide to ```System.load``` or ```System.import``` when importing a module.
+- `options` is an optional object containing information to help speedup the reload process (module sources, dependency trees, etc.)
+
+options has the following (all optional) keys (but the API is still being built so you can expect this to change)
+
+`entries : [String]`
+An array of top level entry points into the application. If entry points aren't provided, systemjs-hmr will discover them
+automatically (slower).
+
+`others` Other options will be exposed to speedup the reload process. For example, pre-calculated dependency trees, pre-fetched module sources, etc.
+
+### SystemJS.**unload**(moduleName)
+A drop in replacement for `SystemJS.delete(moduleName)`.
+
+Checks if the module exports an `__unload` function, i.e. if `typeof SystemJS.get(moduleName).__unload === 'function'`,
+if so, this function is executed.
+
+Finally, `SystemJS.delete(moduleName)` is executed. 
+
 
 ## Extending hot-reloading for your own loader
 In a traditional application one does not usually have to deal with modules being deleted/unloaded, naturally HMR requires

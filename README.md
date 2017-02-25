@@ -1,6 +1,8 @@
 # SystemJS HMR
 [![npm version](https://badge.fury.io/js/systemjs-hmr.svg)](https://badge.fury.io/js/systemjs-hmr)
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
+ 
+### Please note, this library will not give you hot reloading out of the box, if thats what you are looking for, checkout [systemjs-hot-reloader](https://github.com/alexisvincent/systemjs-hot-reloader)
 
 SystemJS-HMR provides hot module replacement primitives for SystemJS via a ```System.reload``` function and extends 
 SystemJS with an `System.unload` function to cleanly unload modules (js, css, scss etc) from the browser.
@@ -26,7 +28,7 @@ Install with your client-side package manager
 
 `systemjs-hmr` **MUST** load before your application code otherwise SystemJS
 won't know how to resolve your `@hot` imports. So either add a script tag
-to your header after loading SystemJS.
+to your header after loading SystemJS
 
 ```html
 <script src="jspm_packages/npm/systemjs-hmr@version/dist/systemjs-hmr.js"></script>
@@ -42,7 +44,7 @@ or import systemjs-hmr **before** importing your app code.
 </script>
 ```
 
-`systemjs-hmr` will automatically set SystemJS.trace = true, so you no longer
+`systemjs-hmr` will automatically set `SystemJS.trace = true`, so you no longer
 need to set this manually, as with previous versions.
 
 ### State Hydration and Safe Unloads

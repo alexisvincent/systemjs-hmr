@@ -11204,7 +11204,6 @@ if (!System._reloader) {
           });
         }).then(function () {
           // Support for the old way of reloading deps
-          // TODO: Print deprecation message
 
           var usedReload = false;
 

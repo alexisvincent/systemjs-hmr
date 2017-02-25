@@ -24,9 +24,6 @@ Install with your client-side package manager
 - `yarn add systemjs-hmr`
 - `npm install systemjs-hmr`
 
-`systemjs-hmr` will automatically set SystemJS.trace = true, so you no longer
-need to set this manually, as with previous versions.
-
 `systemjs-hmr` **MUST** load before your application code otherwise SystemJS
 won't know how to resolve your `@hot` imports. So either add a script tag
 to your header after loading SystemJS.
@@ -44,6 +41,9 @@ or import systemjs-hmr **before** importing your app code.
     })
 </script>
 ```
+
+`systemjs-hmr` will automatically set SystemJS.trace = true, so you no longer
+need to set this manually, as with previous versions.
 
 ### State Hydration and Safe Unloads
 #### (see [#2](https://github.com/alexisvincent/systemjs-hmr/issues/2) for discussion / proposals)

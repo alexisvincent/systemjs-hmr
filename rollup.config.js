@@ -16,12 +16,13 @@ export default {
     }),
     commonjs({
       namedExports: {
-        'node_modules/immutable/dist/immutable.js': [ 'Map', 'Set' ],
+        'node_modules/immutable/dist/immutable.js': ['Map', 'Set'],
         'node_modules/imgraphjs/lib/imgraphjs.bundle.js': ['Graph']
       }
     }),
     babel({
-      exclude: 'node_modules/**'
+      exclude: 'node_modules/**',
+      runtimeHelpers: true
     }),
     // (process.env.NODE_ENV === 'production' && uglify())
   ]

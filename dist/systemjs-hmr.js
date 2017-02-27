@@ -63,6 +63,7 @@ var _aFunction = function(it){
   return it;
 };
 
+// optional / simple context binding
 var aFunction = _aFunction;
 var _ctx = function(fn, that, length){
   aFunction(fn);
@@ -101,6 +102,7 @@ var _fails = function(exec){
   }
 };
 
+// Thank's IE8 for his funny defineProperty
 var _descriptors = !_fails(function(){
   return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
 });
@@ -116,6 +118,7 @@ var _ie8DomDefine = !_descriptors && !_fails(function(){
   return Object.defineProperty(_domCreate('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
 
+// 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject$2 = _isObject;
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
 // and the second argument - flag - preferred type is a string
@@ -244,17 +247,20 @@ var _cof = function(it){
   return toString.call(it).slice(8, -1);
 };
 
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
 var cof = _cof;
 var _iobject = Object('z').propertyIsEnumerable(0) ? Object : function(it){
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
 
+// to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = _iobject;
 var defined$1 = _defined;
 var _toIobject = function(it){
   return IObject(defined$1(it));
 };
 
+// 7.1.15 ToLength
 var toInteger$1 = _toInteger;
 var min       = Math.min;
 var _toLength = function(it){
@@ -269,6 +275,8 @@ var _toIndex = function(index, length){
   return index < 0 ? max(index + length, 0) : min$1(index, length);
 };
 
+// false -> Array#indexOf
+// true  -> Array#includes
 var toIObject$1 = _toIobject;
 var toLength  = _toLength;
 var toIndex   = _toIndex;
@@ -331,6 +339,7 @@ var _enumBugKeys = (
   'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
 ).split(',');
 
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys       = _objectKeysInternal;
 var enumBugKeys$1 = _enumBugKeys;
 
@@ -354,6 +363,7 @@ var _objectDps = _descriptors ? Object.defineProperties : function definePropert
 
 var _html = _global.document && document.documentElement;
 
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject$1    = _anObject;
 var dPs         = _objectDps;
 var enumBugKeys = _enumBugKeys;
@@ -430,11 +440,13 @@ var _iterCreate = function(Constructor, NAME, next){
   setToStringTag$1(Constructor, NAME + ' Iterator');
 };
 
+// 7.1.13 ToObject(argument)
 var defined$2 = _defined;
 var _toObject = function(it){
   return Object(defined$2(it));
 };
 
+// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has$3         = _has;
 var toObject    = _toObject;
 var IE_PROTO$2    = _sharedKey('IE_PROTO');
@@ -689,6 +701,7 @@ var _objectPie = {
 	f: f$3
 };
 
+// all enumerable object keys, includes symbols
 var getKeys$2 = _objectKeys;
 var gOPS    = _objectGops;
 var pIE     = _objectPie;
@@ -704,11 +717,13 @@ var _enumKeys = function(it){
   } return result;
 };
 
+// 7.2.2 IsArray(argument)
 var cof$1 = _cof;
 var _isArray = Array.isArray || function isArray(arg){
   return cof$1(arg) == 'Array';
 };
 
+// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
 var $keys$2      = _objectKeysInternal;
 var hiddenKeys = _enumBugKeys.concat('length', 'prototype');
 
@@ -720,6 +735,7 @@ var _objectGopn = {
 	f: f$5
 };
 
+// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
 var toIObject$5 = _toIobject;
 var gOPN$1      = _objectGopn.f;
 var toString$1  = {}.toString;
@@ -764,6 +780,7 @@ var _objectGopd = {
 	f: f$6
 };
 
+// ECMAScript 6 symbols shim
 var global$4         = _global;
 var has$4            = _has;
 var DESCRIPTORS    = _descriptors;
@@ -1034,6 +1051,7 @@ exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.d
 
 var _typeof = unwrapExports(_typeof_1);
 
+// 19.1.2.1 Object.assign(target, source, ...)
 var getKeys$3  = _objectKeys;
 var gOPS$1     = _objectGops;
 var pIE$2      = _objectPie;
@@ -1066,6 +1084,7 @@ var _objectAssign = !$assign || _fails(function(){
   } return T;
 } : $assign;
 
+// 19.1.3.1 Object.assign(target, source)
 var $export$3 = _export;
 
 $export$3($export$3.S + $export$3.F, 'Object', {assign: _objectAssign});
@@ -1078,6 +1097,7 @@ module.exports = { "default": assign$1, __esModule: true };
 
 var _Object$assign = unwrapExports(assign);
 
+// call something on iterator step with safe closing on error
 var anObject$4 = _anObject;
 var _iterCall = function(iterator, fn, value, entries){
   try {
@@ -1090,6 +1110,7 @@ var _iterCall = function(iterator, fn, value, entries){
   }
 };
 
+// check on default Array iterator
 var Iterators$3  = _iterators;
 var ITERATOR$1   = _wks('iterator');
 var ArrayProto = Array.prototype;
@@ -1106,6 +1127,7 @@ var _createProperty = function(object, index, value){
   else object[index] = value;
 };
 
+// getting tag from 19.1.3.6 Object.prototype.toString()
 var cof$2 = _cof;
 var TAG$1 = _wks('toStringTag');
 var ARG = cof$2(function(){ return arguments; }()) == 'Arguments';
@@ -1247,6 +1269,7 @@ var _objectToArray = function(isEntries){
   };
 };
 
+// https://github.com/tc39/proposal-object-values-entries
 var $export$5 = _export;
 var $values = _objectToArray(false);
 
@@ -1264,6 +1287,7 @@ module.exports = { "default": values$1, __esModule: true };
 
 var _Object$values = unwrapExports(values);
 
+// most Object methods by ES6 should accept primitives
 var $export$6 = _export;
 var core$2    = _core;
 var fails   = _fails;
@@ -1274,6 +1298,7 @@ var _objectSap = function(KEY, exec){
   $export$6($export$6.S + $export$6.F * fails(function(){ fn(1); }), 'Object', exp);
 };
 
+// 19.1.2.14 Object.keys(O)
 var toObject$3 = _toObject;
 var $keys$3    = _objectKeys;
 

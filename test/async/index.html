@@ -1,0 +1,14 @@
+<html>
+<head>
+    <script src="jspm_packages/system.src.js"></script>
+    <script src="jspm.config.js"></script>
+
+    <script>
+      System.import('systemjs-hot-reloader').then(function (connect) {
+        connect({host: location.protocol + '//' + location.hostname + ':5776'})
+
+        return System.import('app.js')
+      })
+    </script>
+</head>
+</html>

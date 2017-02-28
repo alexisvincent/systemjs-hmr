@@ -12398,7 +12398,8 @@ if (!System._reloader) {
            * to a module and will be thinking about this case.
            */
           return resolve(dependent).then(function (dependent) {
-            if (trace.hasDependency(dependent, normalizeHot(dependent)) || typeof System.get(dependent).__reload == 'function') {
+            var module = System.get(dependent);
+            if (trace.hasDependency(dependent, normalizeHot(dependent)) || module && typeof module.__reload == 'function') {
               debug(dependent, 'imports @hot');
               if (!(System.has(getHotName(dependent)) && !System.has(dependent))) System.set(getHotName(dependent), createHotModule(dependent));
             }
@@ -12419,7 +12420,9 @@ if (!System._reloader) {
           _.lastImportFailed = false;
           return bluebird.resolve(entries)
           // resolve all entries
-          .map(resolve)
+          .map(function (x) {
+            return resolve(x);
+          })
           // import all entries, complain if there was an error, but continue anyway
           .map(function (entry) {
             return System.import(entry).catch(function (err) {

@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "systemjs": "0.20.9",
+    "systemjs-hot-reloader": "1.1.0"
+  },
+  "jspm": {
+    "name": "app",
+    "main": "app.js",
+    "dependencies": {
+      "systemjs-hmr": "npm:systemjs-hmr@2.0.7",
+      "systemjs-hot-reloader": "npm:systemjs-hot-reloader@^1.1.0"
+    },
+    "devDependencies": {
+      "plugin-babel": "npm:systemjs-plugin-babel@^0.0.21"
+    }
+  }
+}

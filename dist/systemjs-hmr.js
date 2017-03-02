@@ -12103,10 +12103,10 @@ var immutable_2 = immutable.Set;
 var log$$1 = browser$1('systemjs-hmr:log');
 
 // Make sure SystemJS has loaded
-if (!window.System && !!window.SystemJS) console.warn('The systemjs-hmr polyfill must be loading after SystemJS has loaded');
+if (!System && !!SystemJS) console.warn('The systemjs-hmr polyfill must be loading after SystemJS has loaded');
 
 // Bind and shadow the reference we will be using
-var System = window.SystemJS;
+var System = SystemJS;
 
 var version = System.version.split(' ')[0].split('.')[1];
 

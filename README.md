@@ -26,6 +26,8 @@ Install with your client-side package manager
 - `yarn add systemjs-hmr`
 - `npm install systemjs-hmr`
 
+`systemjs-hmr` requires SystemJS `>0.19.x or >=0.20.8`.
+
 `systemjs-hmr` **MUST** load before your application code otherwise SystemJS
 won't know how to resolve your `@hot` imports. So either add a script tag
 to your header after loading SystemJS

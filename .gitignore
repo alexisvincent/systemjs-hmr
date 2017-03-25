@@ -4,7 +4,7 @@ jspm_packages
 systemjs-hmr.iml
 .systemjs.cache.json
 
-.yarn-error.log
+yarn-error.log
 
 npm-debug.log
 

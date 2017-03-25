@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HMR - Experimental Testing</title>
+    <script src="node_modules/systemjs/dist/system.js"></script>
+    <script src="jspm.config.js"></script>
+</head>
+<body>
+<script>
+    System.import('systemjs-hot-reloader').then((connect) => {
+      connect({host: `//${document.location.hostname}:7777`})
+      System.import('app/app.js')
+    })
+</script>
+</body>
+</html>

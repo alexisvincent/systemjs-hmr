@@ -1,0 +1,109 @@
+{
+  "scripts": {
+    "start": "./node_modules/.bin/systemjs serve"
+  },
+  "registry": "npm",
+  "version": "0.0.0",
+  "jspm": {
+    "name": "hmr-test",
+    "main": "hmr-test.js",
+    "dependencies": {
+      "debug": "^2.6.1",
+      "systemjs-hmr": "2.0.9",
+      "systemjs-hot-reloader": "^1.1.0"
+    },
+    "devDependencies": {
+      "bcrypt-pbkdf": "^1.0.0",
+      "child_process": "jspm-nodelibs-child_process@^0.2.0",
+      "cluster": "jspm-nodelibs-cluster@^0.2.0",
+      "console": "jspm-nodelibs-console@^0.2.0",
+      "dgram": "jspm-nodelibs-dgram@^0.2.0",
+      "dns": "jspm-nodelibs-dns@^0.2.0",
+      "domain": "jspm-nodelibs-domain@^0.2.0",
+      "ecc-jsbn": "~0.1.1",
+      "http": "jspm-nodelibs-http@^0.2.0",
+      "https": "jspm-nodelibs-https@^0.2.0",
+      "jodid25519": "^1.0.0",
+      "jsbn": "0.1",
+      "module": "jspm-nodelibs-module@^0.2.0",
+      "net": "jspm-nodelibs-net@^0.2.0",
+      "plugin-babel": "systemjs-plugin-babel@^0.0.17",
+      "punycode": "jspm-nodelibs-punycode@^0.2.0",
+      "querystring": "jspm-nodelibs-querystring@^0.2.0",
+      "readline": "jspm-nodelibs-readline@^0.2.0",
+      "repl": "jspm-nodelibs-repl@^0.2.0",
+      "timers": "jspm-nodelibs-timers@^0.2.0",
+      "tls": "jspm-nodelibs-tls@^0.2.0",
+      "tty": "jspm-nodelibs-tty@^0.2.0",
+      "tweetnacl": "0.14",
+      "url": "jspm-nodelibs-url@^0.2.0",
+      "zlib": "jspm-nodelibs-zlib@^0.2.0"
+    },
+    "peerDependencies": {
+      "assert": "jspm-nodelibs-assert@^0.2.0",
+      "buffer": "jspm-nodelibs-buffer@^0.2.0",
+      "constants": "jspm-nodelibs-constants@^0.2.0",
+      "crypto": "jspm-nodelibs-crypto@^0.2.0",
+      "events": "jspm-nodelibs-events@^0.2.0",
+      "fs": "jspm-nodelibs-fs@^0.2.0",
+      "os": "jspm-nodelibs-os@^0.2.0",
+      "path": "jspm-nodelibs-path@^0.2.0",
+      "process": "jspm-nodelibs-process@^0.2.0",
+      "stream": "jspm-nodelibs-stream@^0.2.0",
+      "string_decoder": "jspm-nodelibs-string_decoder@^0.2.0",
+      "util": "jspm-nodelibs-util@^0.2.0",
+      "vm": "jspm-nodelibs-vm@^0.2.0"
+    },
+    "overrides": {
+      "npm:browserify-zlib@0.1.4": {
+        "dependencies": {
+          "readable-stream": "^2.0.2",
+          "pako": "~0.2.0"
+        },
+        "map": {
+          "_stream_transform": "readable-stream/transform"
+        }
+      },
+      "npm:debug@2.6.1": {
+        "main": "src/browser.js",
+        "jspmNodeConversion": false,
+        "format": "cjs",
+        "map": {
+          "./src/browser.js": {
+            "node": "./src/node.js"
+          },
+          "./node.js": {
+            "browser": "./src/browser.js"
+          },
+          "fs": "@node/fs",
+          "net": "@node/net",
+          "tty": "@node/tty",
+          "util": "@node/util"
+        }
+      },
+      "npm:inherits@2.0.3": {
+        "ignore": [
+          "test.js"
+        ]
+      },
+      "npm:ms@0.7.2": {
+        "jspmNodeConversion": false,
+        "format": "cjs"
+      }
+    }
+  },
+  "systemjs-tools": {
+    "entries": [],
+    "log": "*",
+    "builder": {
+      "configFiles": [
+        "jspm.config.js"
+      ]
+    }
+  },
+  "dependencies": {
+    "jspm": "beta",
+    "systemjs": "^0.20.9",
+    "systemjs-tools": "^2.0.0-beta.16"
+  }
+}

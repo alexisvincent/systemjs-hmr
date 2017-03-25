@@ -1,3 +1,5 @@
 test/
 __test__/
 node_modules/
+.DS_Store
+jspm_packages

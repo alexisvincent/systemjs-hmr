@@ -1,13 +1,13 @@
-import babel from 'rollup-plugin-babel'
+// import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
-// import uglify from 'rollup-plugin-uglify'
+import uglify from 'rollup-plugin-uglify'
 
 export default {
-  entry: './lib/index.js',
-  dest: './dist/systemjs-hmr.js',
+  entry: './dist/index.js',
+  dest: './dist/bundle.umd.js',
   format: 'iife',
-  // sourceMap: 'inline',
+  sourceMap: true,
   plugins: [
     resolve({
       jsnext: true,
@@ -20,10 +20,10 @@ export default {
         'node_modules/imgraphjs/lib/imgraphjs.bundle.js': ['Graph']
       }
     }),
-    babel({
-      exclude: 'node_modules/**',
-      runtimeHelpers: true
-    }),
-    // (process.env.NODE_ENV === 'production' && uglify())
+    // babel({
+    //   exclude: 'node_modules/**',
+    //   runtimeHelpers: true
+    // }),
+    uglify()
   ]
 }

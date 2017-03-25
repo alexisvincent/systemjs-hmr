@@ -2,12 +2,12 @@
   "name": "systemjs-hmr",
   "version": "2.0.9",
   "description": "Hot Module Replacement Extention for SystemJS",
-  "main": "dist/systemjs-hmr.js",
+  "main": "dist/bundle.umd.js",
   "registry": "npm",
   "format": "global",
   "scripts": {
-    "build": "./node_modules/.bin/rollup -c",
-    "dev": "./node_modules/.bin/rollup -c --watch",
+    "build": "tsc && ./node_modules/.bin/rollup -c",
+    "dev": "tsc --watch & ./node_modules/.bin/rollup -c --watch",
     "prepublish": "npm run build",
     "precommit": "npm run build"
   },
@@ -22,37 +22,17 @@
   },
   "homepage": "https://github.com/alexisvincent/systemjs-hmr#readme",
   "devDependencies": {
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.16.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.1.8",
-    "babel-runtime": "^6.23.0",
+    "@types/node": "^7.0.8",
     "bluebird": "^3.4.7",
     "debug": "^2.6.1",
     "husky": "^0.11.9",
     "imgraphjs": "0.0.32",
     "immutable": "^3.8.1",
     "rollup": "^0.41.4",
-    "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-commonjs": "^7.0.0",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-uglify": "^1.0.1",
     "rollup-watch": "^3.2.2"
-  },
-  "babel": {
-    "presets": [
-      [
-        "env",
-        {
-          "modules": false
-        }
-      ]
-    ],
-    "plugins": [
-      "external-helpers",
-      "transform-object-rest-spread",
-      "transform-runtime"
-    ]
   },
   "jspmPackage": true,
   "jspm": {
@@ -62,9 +42,12 @@
       }
     },
     "map": {
-      "./dist/systemjs-hmr.js": {
+      "./dist/bundle.umd.js": {
         "production": "@empty"
       }
     }
+  },
+  "dependencies": {
+    "@types/systemjs": "^0.20.2"
   }
 }

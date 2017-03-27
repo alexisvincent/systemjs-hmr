@@ -2140,19 +2140,15 @@ systemjs-tools@^2.0.0-beta.16:
     spdy-keys "^0.0.0"
     systemjs-config-builder "^0.0.9"
 
-systemjs@0.20.7:
-  version "0.20.7"
-  resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-0.20.7.tgz#09e0b69180a84446bd4b7d2d2602ff4e567434bd"
-
-systemjs@^0.19.46:
+systemjs@0.19, systemjs@^0.19.46:
   version "0.19.46"
   resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-0.19.46.tgz#c04574b3335f052a0e3c7a00ee4188c6e4c1e38e"
   dependencies:
     when "^3.7.5"
 
-systemjs@^0.20.9:
-  version "0.20.9"
-  resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-0.20.9.tgz#80c00a89511a2064c3f57ce6e8f27784620477ec"
+systemjs@0.20.7:
+  version "0.20.7"
+  resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-0.20.7.tgz#09e0b69180a84446bd4b7d2d2602ff4e567434bd"
 
 tar-fs@^1.13.0:
   version "1.15.0"

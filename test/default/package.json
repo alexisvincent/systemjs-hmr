@@ -103,7 +103,7 @@
   },
   "dependencies": {
     "jspm": "beta",
-    "systemjs": "^0.20.9",
+    "systemjs": "0.19",
     "systemjs-tools": "^2.0.0-beta.16"
   }
 }

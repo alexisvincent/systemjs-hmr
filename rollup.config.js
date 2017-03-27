@@ -4,7 +4,7 @@ import commonjs from 'rollup-plugin-commonjs'
 import uglify from 'rollup-plugin-uglify'
 
 export default {
-  entry: './dist/index.js',
+  entry: './dist/browser.js',
   dest: './dist/bundle.umd.js',
   format: 'iife',
   sourceMap: true,
@@ -17,7 +17,8 @@ export default {
     commonjs({
       namedExports: {
         'node_modules/immutable/dist/immutable.js': ['Map', 'Set'],
-        'node_modules/imgraphjs/lib/imgraphjs.bundle.js': ['Graph']
+        'node_modules/imgraphjs/lib/imgraphjs.bundle.js': ['Graph'],
+        'node_modules/ramda/index.js': ['curryN']
       }
     }),
     // babel({

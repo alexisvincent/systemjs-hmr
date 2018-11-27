@@ -3,6 +3,7 @@ jspm_packages
 .idea
 systemjs-hmr.iml
 .systemjs.cache.json
+.vs
 
 yarn-error.log
 

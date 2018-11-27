@@ -4,17 +4,17 @@ import Promise from 'bluebird';
 export var getVersionInfo = function (System) {
     var _a = System.version.split(' '), full = _a[0], tag = _a[1];
     var _b = full.split('.').map(parseInt), major = _b[0], minor = _b[1], patch = _b[2];
-    var is19 = minor == 19, is20 = minor == 20;
-    return { full: full, tag: tag, major: major, minor: minor, patch: patch, is20: is20, is19: is19 };
+    var is19 = minor == 19, isAtleast20 = minor >= 20;
+    return { full: full, tag: tag, major: major, minor: minor, patch: patch, isAtleast20: isAtleast20, is19: is19 };
 };
 export var makeContext = function (System, logger) {
     var version = getVersionInfo(System);
-    var is20 = version.is20;
+    var isAtleast20 = version.isAtleast20;
     // Make sure System.trace is set (needed for trace to be fully populated)
     System.trace = true;
-    if (is20)
+    if (isAtleast20)
         System.loads = SystemJS.loads || {};
-    var traceIMPL = is20 ? SystemJS.loads : SystemJS.defined;
+    var traceIMPL = isAtleast20 ? SystemJS.loads : SystemJS.defined;
     var trace = {
         get: function (moduleID) { return traceIMPL[moduleID] || false; },
         keys: function () { return Object.keys(traceIMPL); },
@@ -27,7 +27,7 @@ export var makeContext = function (System, logger) {
         lock: Promise.resolve(''),
         entryCache: [],
         lastImportFailed: false,
-        resolve: is20 ? SystemJS.resolve : SystemJS.normalize
+        resolve: isAtleast20 ? SystemJS.resolve : SystemJS.normalize
     };
     /**
      * Override standard normalize function to map calls to @hot to normalizedCallerModuleName!@@hot
@@ -37,7 +37,7 @@ export var makeContext = function (System, logger) {
      * @param parentAddress
      * @returns {*}
      */
-    if (is20) {
+    if (isAtleast20) {
         System.resolve = function (moduleName, parentName, parentAddress) {
             if (moduleName == '@hot')
                 return Promise.resolve(resolveHotModule(context, parentName));

@@ -9,7 +9,7 @@ type VersionInfo = {
     full: string,
     tag: string,
     is19: boolean,
-    is20: boolean,
+    isAtleast20: boolean   
 }
 
 export const getVersionInfo = (System: SystemJSLoader.System): VersionInfo => {
@@ -18,9 +18,9 @@ export const getVersionInfo = (System: SystemJSLoader.System): VersionInfo => {
 
     const
         is19 = minor == 19,
-        is20 = minor == 20;
+        isAtleast20 = minor >= 20;        
 
-    return { full, tag, major, minor, patch, is20, is19 }
+    return { full, tag, major, minor, patch, isAtleast20, is19 }
 }
 
 
@@ -51,14 +51,14 @@ export type Context = {
 
 export const makeContext = (System: SystemJSLoader.System, logger: Logger): Context => {
     const version = getVersionInfo(System)
-    const { is20 } = version
+    const { isAtleast20 } = version
 
     // Make sure System.trace is set (needed for trace to be fully populated)
     System.trace = true
 
-    if (is20) System.loads = SystemJS.loads || {}
+    if (isAtleast20) System.loads = SystemJS.loads || {}
 
-    const traceIMPL = is20 ? SystemJS.loads : SystemJS.defined
+    const traceIMPL = isAtleast20 ? SystemJS.loads : SystemJS.defined
 
     const trace: Trace = {
         get: (moduleID) => traceIMPL[moduleID] || false,
@@ -76,7 +76,7 @@ export const makeContext = (System: SystemJSLoader.System, logger: Logger): Cont
         entryCache: [],
         lastImportFailed: false,
 
-        resolve: is20 ? SystemJS.resolve : SystemJS.normalize
+        resolve: isAtleast20 ? SystemJS.resolve : SystemJS.normalize
     }
 
     /**
@@ -87,7 +87,7 @@ export const makeContext = (System: SystemJSLoader.System, logger: Logger): Cont
      * @param parentAddress
      * @returns {*}
      */
-    if (is20) {
+    if (isAtleast20) {
         System.resolve = function(moduleName, parentName, parentAddress) {
             if (moduleName == '@hot') return Promise.resolve(resolveHotModule(context, parentName))
             else return SystemJS.__proto__.resolve.apply(System, [moduleName, parentName, parentAddress])

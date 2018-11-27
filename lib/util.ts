@@ -248,8 +248,9 @@ export const unload = curryN(1, (context: Context, moduleName: string) => {
     if (System.has(moduleName)) {
         const module = System.get(moduleName)
 
-        if (typeof module.__unload == 'function')
-            module.__unload()
+        var unloadFunc = module.__unload || (module.default ? module.default.__unload : undefined);
+        if (typeof unloadFunc == 'function')
+        unloadFunc();
     }
 
     System.delete(moduleName)

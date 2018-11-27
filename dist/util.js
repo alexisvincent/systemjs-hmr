@@ -175,8 +175,9 @@ export var unload = curryN(1, function (context, moduleName) {
     logger("unloading " + moduleName);
     if (System.has(moduleName)) {
         var module_1 = System.get(moduleName);
-        if (typeof module_1.__unload == 'function')
-            module_1.__unload();
+        var unloadFunc = module_1.__unload || (module_1.default ? module_1.default.__unload : undefined);
+        if (typeof unloadFunc == 'function')
+            unloadFunc();
     }
     System.delete(moduleName);
 });
